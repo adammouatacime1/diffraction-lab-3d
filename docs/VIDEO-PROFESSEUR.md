@@ -9,9 +9,12 @@ Durée : environ **10 min 21 s**, en 22 chapitres. Le support structuré de narr
 - [Vidéo MP4 à télécharger](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/presentation-professeur.mp4)
 - [Repères de lecture](video/chapitres.txt)
 - [Sous-titres français SRT](video/presentation-professeur.srt)
+- [Texte à lire pour enregistrer une vraie voix humaine](video/narration-voix-humaine.txt)
 - [Contrôles techniques du fichier final](video/CONTROLES.json)
 
 Pour la montrer au professeur : téléchargez le MP4, ouvrez-le avec le lecteur vidéo de Windows ou VLC, puis utilisez le plein écran. Les sous-titres sont déjà visibles dans l’image. Le fichier SRT séparé permet aussi de consulter ou de réutiliser le texte des sous-titres.
+
+Pour remplacer la narration par la vraie voix d’une personne, le texte à enregistrer est fourni ci-dessus, avec les 22 chapitres et quelques indications de prononciation. La première phrase y est adaptée pour une présentation humaine. Le MP4 actuel conserve sa voix de synthèse ; une version avec voix humaine nécessite de recevoir l’enregistrement, puis d’adapter le montage et les sous-titres à son rythme.
 
 Pour une démonstration reproductible : remettre le champ à l’équilibre, conserver les paramètres et la résolution, observer le même temps physique, et attendre l’arrivée des ondes puis plusieurs périodes avant les estimations harmoniques.
 

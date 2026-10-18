@@ -1,0 +1,133 @@
+﻿DIFFRACTION LAB 3D — TEXTE POUR UNE NARRATION HUMAINE
+
+Consignes de lecture (ne pas enregistrer cette partie)
+
+Une personne de votre choix lit les paragraphes ci-dessous. Les titres de chapitres ne sont pas à lire.
+Utilisez l’Enregistreur de Windows ou le dictaphone d’un téléphone, dans un endroit calme. Parlez à votre rythme et faites une courte pause entre les chapitres. Il n’est pas nécessaire de respecter les minutages de la vidéo actuelle : le montage sera adapté à votre enregistrement.
+Vous pouvez envoyer un seul fichier audio ou un fichier par chapitre, au format M4A, MP3 ou WAV.
+
+Quelques prononciations utiles :
+- 3D : trois dimensions
+- Node.js : « node jé esse »
+- LTS : « elle té esse »
+- package.json : « package point jéson »
+- npm ci : « enne pé emme, cé i »
+- npm run dev : « enne pé emme, run dev »
+- CFL : « cé effe elle »
+- PNG : « pé enne jé »
+- JSON : « jéson »
+
+DÉBUT DU TEXTE À ENREGISTRER
+
+
+CHAPITRE 01 — Bienvenue dans Diffraction Lab 3D
+
+Bonjour. Je vous présente Diffraction Lab 3D. Le laboratoire calcule la propagation d’ondes dans une cuve numérique. Sur Windows, installez Node.js en version LTS, extrayez le projet, puis ouvrez un terminal dans le dossier contenant package.json. Lancez npm ci, puis npm run dev, et ouvrez l’adresse locale affichée. Le calcul fonctionne ensuite dans le navigateur.
+
+
+CHAPITRE 02 — Se repérer dans le laboratoire
+
+À gauche, la bibliothèque propose dix expériences : propagation, diffraction, interférences et comparaison. Chaque scénario fournit des paramètres de départ, un objectif et une prédiction à confronter au calcul. Les cinq modes, Découverte, Huygens, Analyse, Comparaison et Présentation, adaptent les outils visibles. Au centre se trouve la cuve de deux mètres quatre-vingts sur un mètre soixante. Les paramètres physiques restent accessibles dans le panneau latéral.
+
+
+CHAPITRE 03 — Lecture et temps physique
+
+Les commandes permettent de démarrer, mettre en pause, avancer d’un pas d’observation ou recommencer l’expérience. La vitesse de lecture règle la rapidité de présentation, pas la célérité physique. L’horloge affiche le temps simulé. Un changement ordinaire de paramètre conserve les ondes déjà présentes : l’ancien et le nouveau régime peuvent coexister. Pour une comparaison propre, recommencez, attendez l’arrivée du signal, puis plusieurs périodes.
+
+
+CHAPITRE 04 — Fréquence, période, célérité et amplitude
+
+La fréquence indique le nombre d’oscillations par seconde. La période vaut un divisé par la fréquence. La célérité est la vitesse de propagation, et la longueur d’onde vaut la célérité divisée par la fréquence. À dix hertz et deux mètres par seconde, on obtient une période de zéro virgule dix seconde et une longueur d’onde de vingt centimètres. L’amplitude source, exprimée en millimètres, règle l’excitation. Modifier la période ou la longueur d’onde ajuste la fréquence.
+
+
+CHAPITRE 05 — Choisir et orienter les sources
+
+Source d’onde propose Rectiligne, Ponctuelle et Deux sources cohérentes. La source ponctuelle permet d’étudier les fronts circulaires. Deux sources ajoutent une séparation et un déphasage réglables. Les réglages avancés donnent la position, la phase initiale et, pour la source rectiligne, la direction incidente. Source active coupe ou rétablit l’excitation. La source rectiligne est finie et émet des deux côtés : elle approche une onde plane sans être idéale partout.
+
+
+CHAPITRE 06 — Caméras et relief visuel
+
+La vue Dessus facilite la lecture des fronts et des obstacles. Profil distingue crêtes et creux. Isométrique montre simultanément le relief et la propagation. En 3D libre, glissez pour tourner et utilisez la molette pour zoomer. Le curseur Relief visuel grossit seulement les déplacements affichés. Il ne modifie ni l’amplitude physique, ni le calcul, ni les mesures des sondes.
+
+
+CHAPITRE 07 — Comprendre le rapport d’ouverture
+
+La diffraction dépend notamment du rapport entre largeur de fente et longueur d’onde. À dix hertz et deux mètres par seconde, comparez des ouvertures de dix, vingt et quatre-vingts centimètres : les rapports valent zéro virgule cinq, un et quatre. Une petite ouverture devrait davantage étaler l’onde transmise. Une grande ouverture devrait rendre la transmission plus directionnelle, avec des effets de bord. Augmenter la fréquence réduit la longueur d’onde : surveillez alors la résolution et recommencez avant de comparer.
+
+
+CHAPITRE 08 — Obstacles et géométries
+
+Géométrie propose Sans obstacle, Fente simple, Double fente, Obstacle circulaire, Obstacle rectangulaire et Bord unique. Selon le choix, réglez largeur d’ouverture, écartement des fentes, diamètre ou dimensions de l’obstacle. Les réglages avancés déplacent l’obstacle. Diffraction, réflexion et superposition proviennent du champ calculé. Les contours sont représentés par des cellules : leur précision dépend du maillage, notamment pour un cercle.
+
+
+CHAPITRE 09 — Les bords de la cuve
+
+Dans les réglages avancés, Bords de cuve permet de choisir Absorbants ou Réfléchissants. La couche amortissante réduit les retours d’onde sans les supprimer parfaitement. Elle n’est pas une absorption idéale. Les bords réfléchissants font apparaître des retours et peuvent favoriser des ondes stationnaires. Pour étudier une propagation libre, placez les mesures loin des obstacles et de la périphérie amortissante.
+
+
+CHAPITRE 10 — Résolution et stabilité numérique
+
+Résolution du solveur propose Performance, Équilibré et Haute précision. Une grille plus fine décrit mieux les petites ouvertures et les longueurs d’onde courtes, mais demande davantage de calcul. Changer de résolution recommence l’expérience. L’indicateur CFL concerne la stabilité du pas de temps : être stable ne garantit pas une mesure précise. Lisez les avertissements et comparez, si nécessaire, une même mesure avec deux résolutions.
+
+
+CHAPITRE 11 — Huygens : du front aux ondelettes
+
+Le mode Huygens décompose l’explication en sept étapes. Première étape : repérez les fronts incidents. Deuxième : observez la portion qui traverse l’ouverture. Troisième : faites apparaître les sources secondaires virtuelles. Quatrième : regardez leurs ondelettes. Les boutons numérotés et Suivant permettent d’avancer à votre rythme. Cette construction aide à expliquer la propagation après la fente.
+
+
+CHAPITRE 12 — Huygens : distinguer illustration et calcul
+
+Cinquième étape : les contributions se superposent. Sixième : retrouvez le front diffracté dans le champ numérique. Septième : les illustrations disparaissent et seul le résultat calculé reste visible. Sources secondaires visibles règle la densité des points dessinés. Ajouter ces points ne fournit aucune énergie supplémentaire au solveur. L’interrupteur Visualisation de Huygens masque aussi l’illustration. Les ondelettes constituent une explication qualitative, pas une mesure indépendante.
+
+
+CHAPITRE 13 — Lire les trois cartes physiques
+
+Grandeur visualisée distingue Élongation instantanée, Amplitude locale estimée et Intensité relative. L’élongation décrit le déplacement maintenant ; traverser zéro ne signifie pas cesser d’osciller. L’amplitude est estimée à la fréquence source sur une période complète. L’intensité relative est le carré de l’amplitude locale divisé par le carré de l’amplitude source. Sans unité, elle peut dépasser un par superposition ; ce n’est pas une puissance en watts par mètre carré.
+
+
+CHAPITRE 14 — Deux sondes et leurs signaux
+
+En Analyse, Placer une sonde autorise deux points de mesure. Cliquez dans l’eau, ou saisissez précisément leurs coordonnées. Les valeurs viennent du nœud de grille le plus proche. Le panneau affiche élongation, amplitude, phase harmonique et historiques temporels. Attendez plusieurs périodes pour interpréter ces estimations. La phase devient indéfinie près d’une amplitude nulle. Une sonde englobée par un obstacle est signalée ; effacez-la ou déplacez-la.
+
+
+CHAPITRE 15 — Mesurer une arrivée
+
+Pour comparer des arrivées, placez d’abord les sondes puis recommencez. L’arrivée opérationnelle correspond au premier relevé où la valeur absolue de l’élongation atteint cinq pour cent de l’amplitude source. Le décalage est l’arrivée à la sonde deux moins celle à la sonde un. Ce seuil dépend du signal et ne repère pas exactement un front mathématique. L’interface indique aussi l’intervalle maximal entre captures.
+
+
+CHAPITRE 16 — Règle et coupe spatiale
+
+Mesurer une distance sélectionne deux points dans le plan de la cuve. Pour mesurer une longueur d’onde, prenez deux crêtes consécutives suivant la direction de propagation. Une distance oblique ne donne pas directement cette longueur. Tracer une coupe demande deux extrémités et affiche l’élongation instantanée le long du segment. Les portions situées dans les obstacles sont exclues. Mettez en pause pour choisir les points et commenter le profil.
+
+
+CHAPITRE 17 — Profil angulaire et Fraunhofer
+
+En Analyse, le profil numérique échantillonne les amplitudes sur un arc, après acquisition d’une période et d’un signal suffisant. Il est normalisé par l’amplitude sur l’axe. La courbe de Fraunhofer, affichée séparément, concerne une fente unique idéale, éclairée uniformément en incidence normale et observée loin. Si le nombre de Fresnel dépasse zéro virgule un, l’application signale le champ proche. Une faible valeur ne garantit pas à elle seule toutes les hypothèses.
+
+
+CHAPITRE 18 — Interférences, minima et maxima
+
+Double fente et Deux sources cohérentes permettent d’étudier les interférences. Afficher les zones de faible amplitude utilise un seuil relatif réglable et active la carte d’amplitude. Ce sont des minima estimés, pas la preuve d’un zéro exact. Une zone encore non atteinte paraît aussi faible. Afficher les maxima locaux repère des valeurs élevées. Attendez la propagation et examinez les sondes avant de conclure sur un nœud.
+
+
+CHAPITRE 19 — Comparer deux cuves
+
+Comparaison affiche deux cuves au même temps physique. Dans cette version, la largeur de la seconde fente est le paramètre séparé ; les autres réglages sont communs. Faites varier Fente de la seconde cuve pour isoler son influence. Recopier les paramètres rend les configurations identiques et recommence les deux calculs. Pour présenter une différence, conservez la même résolution et comparez depuis le même départ, au même temps physique.
+
+
+CHAPITRE 20 — Exporter et retrouver une expérience
+
+Capturer l’expérience en PNG enregistre une image avec ses paramètres. Exporter JSON conserve les réglages. Importer permet de les réutiliser : le fichier est contrôlé, puis le champ repart de l’équilibre. Un fichier invalide déclenche une erreur. Le JSON ne contient ni tout le champ ni son historique. Pour reproduire une observation, notez également le temps physique et les positions de mesure, puis recommencez avec la même résolution.
+
+
+CHAPITRE 21 — Préparer la présentation au professeur
+
+Le mode Présentation agrandit la cuve et rappelle l’équation d’onde ainsi que les relations entre fréquence, période et longueur d’onde. Annotations explicatives affiche ou masque le commentaire. Afficher les réglages retrouve les paramètres. Le bouton de thème choisit un fond clair ou sombre ; Plein écran facilite la projection. Préparez une scène, ralentissez la lecture, puis mettez en pause pour expliquer ce que vous observez et les paramètres conservés.
+
+
+CHAPITRE 22 — Validation scientifique et limites
+
+Validation scientifique exécute de vraies expériences de référence dans le navigateur : lisez paramètres, résultats et critères affichés. Ces contrôles concernent le modèle scalaire linéaire, non dispersif, calculé sur une grille. Ils ne valident pas tous les réglages ni une cuve réelle. Les effets gravito-capillaires, la profondeur, la turbulence et les pertes réelles de l’eau ne sont pas modélisés. Devant le professeur, distinguez toujours le résultat calculé, la mesure, l’illustration pédagogique et la théorie idéale.
+
+
+FIN DU TEXTE À ENREGISTRER
