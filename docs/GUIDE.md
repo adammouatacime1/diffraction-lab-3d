@@ -6,7 +6,7 @@ Ouvrez un terminal dans le dossier du projet. Lancez `npm install`, puis `npm ru
 
 Les commandes de lecture permettent de lancer, mettre en pause, avancer d’un pas ou recommencer. Le temps affiché est le temps **physique simulé**, et non la durée passée devant l’écran. Le réglage de vitesse de lecture change la rapidité d’observation ; il n’autorise pas le solveur à dépasser sa limite de stabilité.
 
-Les modes **Découverte**, **Huygens**, **Analyse**, **Comparaison** et **Présentation** adaptent les outils visibles. La bibliothèque fournit dix situations prêtes à explorer. Les textes « prédiction » et « explication » donnent des pistes : observez le calcul avant de conclure.
+Les modes **Découverte**, **Huygens**, **Analyse**, **Comparaison** et **Présentation** adaptent les outils visibles. La bibliothèque fournit onze situations prêtes à explorer. Les textes « prédiction » et « explication » donnent des pistes : observez le calcul avant de conclure.
 
 ## Lire et régler les paramètres
 
@@ -31,7 +31,11 @@ Une modification en cours d’expérience conserve le champ et le temps et peut 
 - **Dessus** : reconnaître les fronts, les franges et la géométrie des obstacles.
 - **Profil** : distinguer les crêtes au-dessus et les creux au-dessous de l’équilibre.
 - **Isométrique** : montrer simultanément relief et propagation.
-- **Libre** : tourner autour de la cuve et zoomer avec les commandes de la souris ou du pavé tactile.
+- **Libre** : tourner autour de la cuve avec la souris. Le bouton de loupe **Activer le zoom à la molette**, à gauche de la cuve, permet de zoomer volontairement.
+
+Par défaut, la molette au-dessus de la cuve fait défiler la page. Lorsque le zoom est activé, recliquez sur la loupe pour retrouver le défilement. Sur téléphone, le glissement vertical fait défiler la page tant que le zoom est désactivé ; son activation permet de manipuler la vue avec les gestes tactiles.
+
+Sur ordinateur et tablette en disposition à deux colonnes, la colonne **Expériences et paramètres physiques** possède son propre défilement : placez le pointeur dessus et utilisez la molette. Elle reste accessible à côté de la cuve. Sur téléphone, les panneaux suivent le défilement normal de la page.
 
 Le plein écran aide à la projection. Les couleurs sont accompagnées d’une légende : l’élongation peut être positive ou négative ; l’amplitude et l’intensité relative sont non négatives.
 
@@ -64,6 +68,21 @@ Conservez `v = 2 m/s` et `f = 10 Hz`, donc `λ = 0,20 m`. Utilisez une source pl
 La bibliothèque propose directement la fente étroite et la fente large. Le scénario **Fréquence** ou **Huygens** commence à `a = 0,20 m`. Pour une comparaison reproductible, employez la même résolution et observez le même temps physique après chaque recommencement.
 
 En augmentant f à v et a constantes, λ diminue et a/λ augmente. Cela change la diffraction. Surveillez l’avertissement de résolution : une onde plus courte a besoin d’une grille plus fine.
+
+## Montrer l’angle θ et son premier minimum
+
+Cliquez sur **Voir le cas θ = 30°** au-dessus de la cuve, ou choisissez **11 · Angle θ et premier minimum** dans **Expériences**. Sur un téléphone, la bibliothèque d’expériences se trouve plus bas dans la page. Cette expérience prépare le mode Découverte, la vue du dessus et la carte d’amplitude locale. Elle utilise une onde plane en incidence normale, `v = 2 m/s`, `f = 10 Hz`, donc `λ = 0,20 m`, et une fente de largeur `a = 0,40 m`.
+
+Le panneau pédagogique **Angle θ et premier minimum**, placé avant la cuve, montre séparément le modèle idéal de Fraunhofer en champ lointain. Il représente l’axe central et les deux directions du premier minimum, à `+θ₁` et `−θ₁`. L’angle θ₁ se mesure entre l’axe et un seul de ces rayons ; l’ouverture angulaire totale du lobe central vaut `2θ₁`. Si vous avez changé les paramètres ou l’incidence, utilisez **Rétablir le cas θ = 30°** pour retrouver la démonstration.
+
+1. Lisez `sin θ₁ = λ/a = 0,50`, donc `θ₁ = 30°`. Le lobe central s’étend ici de −30° à +30°.
+2. Déplacez le curseur d’angle pour suivre l’amplitude théorique normalisée `A(θ)/A(0)`.
+3. Cliquez sur **Premier minimum** : la direction sélectionnée rejoint `+30°`, où l’amplitude et l’intensité théoriques sont nulles. Le tracé et la valeur indiquent ce zéro.
+4. Expliquez que des lobes secondaires existent au-delà des premiers minima : θ₁ délimite le **lobe central**, pas toute l’onde transmise.
+
+La relation utilisée est `sin θ₁ = λ/a`. L’approximation scolaire `θ₁ ≈ λ/a` donne un angle **en radians** et suppose de petits angles ; elle donne environ 28,6° pour cet exemple, contre 30° avec l’arcsinus. Si `a < λ`, aucun premier minimum n’existe dans le domaine angulaire de ce modèle. Pour `a = λ`, il se trouve à 90°, en direction rasante.
+
+Ce panneau ne modifie pas le champ calculé dans la cuve. Son zéro est une prédiction du modèle idéal, pas une mesure FDTD : la cuve finie peut rester en champ proche et contenir des réflexions. N’interprétez donc pas une couleur ou une élongation momentanément nulle dans la cuve comme la preuve de ce minimum d’amplitude.
 
 ## Huygens, étape par étape
 

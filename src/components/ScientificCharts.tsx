@@ -1,5 +1,8 @@
 import { useId } from 'react';
 import type { WaveEngine } from '../physics/WaveEngine';
+import { fraunhoferIntensity } from '../physics/fraunhofer';
+
+export { fraunhoferIntensity } from '../physics/fraunhofer';
 
 export interface Series {
   label: string;
@@ -120,26 +123,20 @@ export function LineChart({
   );
 }
 
-/** Normalized single-slit Fraunhofer intensity; all lengths use the same unit. */
-export function fraunhoferIntensity(angleDegrees: number, aperture: number, wavelength: number): number {
-  if (!Number.isFinite(angleDegrees) || !Number.isFinite(aperture) || !Number.isFinite(wavelength) || aperture <= 0 || wavelength <= 0) return NaN;
-  const beta = Math.PI * aperture * Math.sin(angleDegrees * Math.PI / 180) / wavelength;
-  if (Math.abs(beta) < 1e-8) return 1;
-  return (Math.sin(beta) / beta) ** 2;
-}
-
 export function FraunhoferChart({ aperture, wavelength }: { aperture: number; wavelength: number }) {
   if (!Number.isFinite(aperture) || !Number.isFinite(wavelength) || aperture <= 0 || wavelength <= 0) {
     return <p className="muted">Une largeur de fente et une longueur d’onde strictement positives sont nécessaires.</p>;
   }
-  const points = Array.from({ length: 721 }, (_, index) => {
-    const x = -90 + index / 4;
-    return { x, y: fraunhoferIntensity(x, aperture, wavelength) };
-  });
-  const minimumCount = Math.floor(aperture / wavelength + 1e-10);
+  const minimumCount = Math.floor(aperture / wavelength);
   const firstMinima = Array.from({ length: Math.min(minimumCount, 3) }, (_, index) => {
     return Math.asin(Math.min(1, (index + 1) * wavelength / aperture)) * 180 / Math.PI;
   });
+  // Include the labelled zeros exactly: a fixed 0.25° sampling can miss them.
+  const angles = [...new Set([
+    ...Array.from({ length: 721 }, (_, index) => -90 + index / 4),
+    ...firstMinima.flatMap((angle) => [-angle, angle]),
+  ])].sort((left, right) => left - right);
+  const points = angles.map((x) => ({ x, y: fraunhoferIntensity(x, aperture, wavelength) }));
   return (
     <div>
       <LineChart series={[{ label: 'Modèle de Fraunhofer, fente unique', color: '#f4b65c', points }]} xLabel="Angle θ (°)" yLabel="Intensité I / I(0)" height={180} />

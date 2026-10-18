@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { fraunhoferIntensity, sampleAngularIntensity } from '../src/components/ScientificCharts';
+import { firstMinimumDegrees, fraunhoferAmplitude, fraunhoferField } from '../src/physics/fraunhofer';
 import { DEFAULT_PARAMETERS } from '../src/types';
 
 describe('single-slit Fraunhofer reference model', () => {
   it('has a finite normalized central maximum', () => {
+    expect(fraunhoferField(0, 0.4, 0.2)).toBe(1);
+    expect(fraunhoferAmplitude(0, 0.4, 0.2)).toBe(1);
     expect(fraunhoferIntensity(0, 0.4, 0.2)).toBe(1);
     expect(fraunhoferIntensity(1e-12, 0.4, 0.2)).toBeCloseTo(1, 12);
   });
@@ -19,6 +22,9 @@ describe('single-slit Fraunhofer reference model', () => {
     // The first minimum must be 30 degrees here; using theta in place of sin(theta)
     // would produce a different zero and fail this independent reference case.
     expect(fraunhoferIntensity(30, 0.4, 0.2)).toBeLessThan(1e-28);
+    expect(firstMinimumDegrees(0.4, 0.2)).toBeCloseTo(30, 12);
+    expect(fraunhoferField(30, 0.4, 0.2)).toBe(0);
+    expect(fraunhoferAmplitude(-30, 0.4, 0.2)).toBe(0);
     expect(fraunhoferIntensity(20, 0.4, 0.2)).toBeGreaterThan(0.1);
   });
 
@@ -32,7 +38,26 @@ describe('single-slit Fraunhofer reference model', () => {
       expect(intensity).toBeLessThanOrEqual(1);
     }
     expect(wavelength / aperture).toBeGreaterThan(1);
+    expect(firstMinimumDegrees(aperture, wavelength)).toBeNull();
+    expect(firstMinimumDegrees(wavelength * (1 - 1e-12), wavelength)).toBeNull();
     expect(fraunhoferIntensity(90, aperture, wavelength)).toBeCloseTo(boundaryIntensity, 12);
+  });
+
+  it('retains secondary lobes beyond the first minimum instead of imposing a hard cutoff', () => {
+    // At sin(theta) = 3/4 and a/lambda = 2, beta = 3 pi / 2.
+    const angle = Math.asin(0.75) * 180 / Math.PI;
+    const field = -2 / (3 * Math.PI);
+    expect(fraunhoferField(angle, 0.4, 0.2)).toBeCloseTo(field, 14);
+    expect(fraunhoferAmplitude(angle, 0.4, 0.2)).toBeCloseTo(-field, 14);
+    expect(fraunhoferIntensity(angle, 0.4, 0.2)).toBeCloseTo(field ** 2, 14);
+    expect(fraunhoferField(-angle, 0.4, 0.2)).toBeCloseTo(field, 14);
+  });
+
+  it('places the limiting first minimum at 90 degrees when a equals lambda', () => {
+    expect(firstMinimumDegrees(0.2, 0.2)).toBe(90);
+    expect(fraunhoferAmplitude(90, 0.2, 0.2)).toBe(0);
+    expect(fraunhoferAmplitude(-90, 0.2, 0.2)).toBe(0);
+    expect(fraunhoferAmplitude(89, 0.2, 0.2)).toBeGreaterThan(0);
   });
 
   it('is symmetric and invariant under a common change of length units', () => {
@@ -49,6 +74,11 @@ describe('single-slit Fraunhofer reference model', () => {
       [0, 0.1, -0.2], [NaN, 0.1, 0.2], [0, Infinity, 0.2],
     ]) {
       expect(fraunhoferIntensity(angle, aperture, wavelength)).toBeNaN();
+      expect(fraunhoferField(angle, aperture, wavelength)).toBeNaN();
+      expect(fraunhoferAmplitude(angle, aperture, wavelength)).toBeNaN();
+    }
+    for (const [aperture, wavelength] of [[0, 0.2], [-1, 0.2], [0.1, 0], [0.1, -1], [NaN, 0.2], [0.1, Infinity]]) {
+      expect(firstMinimumDegrees(aperture, wavelength)).toBeNull();
     }
   });
 });

@@ -125,6 +125,10 @@ I(θ)/I(0) = [sin(β)/β]²
 
 Au centre, la limite vaut 1. Les minima idéaux satisfont `a sin(θ) = mλ`, pour les entiers non nuls m tels que `|mλ/a| ≤ 1`.
 
+L’amplitude théorique normalisée est `A(θ)/A(0) = |sin(β)/β|` ; son carré donne l’intensité normalisée. Pour le premier minimum, `θ₁ = arcsin(λ/a)` si `a ≥ λ`. Les directions `±θ₁` délimitent le lobe central ; les lobes secondaires au-delà ne sont pas supprimés. Lorsque `a < λ`, aucun zéro angulaire n’existe dans ce modèle. Lorsque `a = λ`, le premier zéro est dans les directions rasantes de ±90°. L’approximation `θ₁ ≈ λ/a`, exprimée en radians, ne convient qu’aux petits angles.
+
+L’expérience **11 · Angle θ et premier minimum** prépare `a = 0,40 m`, `v = 2 m/s` et `f = 10 Hz`, soit `λ = 0,20 m`. Son panneau pédagogique trace l’axe et les rayons des premiers minima, avec un curseur d’angle et une lecture de l’amplitude théorique. Ici `sin θ₁ = 0,5`, donc `θ₁ = 30°` et la largeur angulaire du lobe central vaut 60°. Le bouton **Premier minimum** sélectionne ce zéro analytique. Le panneau représente la théorie en champ lointain ; il n’injecte ni enveloppe ni atténuation artificielle dans le solveur. Le champ de la cuve et le profil angulaire FDTD restent des calculs distincts.
+
 La condition de champ lointain exige une distance grande devant l’échelle `a²/λ`, avec des détails selon la géométrie. Une cuve de taille finie ne satisfait pas toujours ce critère, surtout pour une grande ouverture. Le champ proche, la source finie, les réflexions, l’épaisseur numérique de la barrière et la forme réelle du champ dans l’ouverture peuvent modifier les profils. La théorie analytique est donc affichée comme une comparaison distincte du profil angulaire numérique ; elle ne doit pas être utilisée pour imposer le résultat de la simulation. Le profil mesuré ne garantit pas le champ lointain.
 
 ## Comparaison entre deux cuves

@@ -46,6 +46,8 @@ Une fois le fichier de verrouillage présent, `npm ci` permet une réinstallatio
 
 Le [guide d’utilisation](docs/GUIDE.md) propose un déroulé de cinq minutes. Le document [Modèle et méthode numérique](docs/MODELE.md) explique les équations, les mesures et les limites.
 
+Pour montrer un premier minimum au professeur, cliquez sur **Voir le cas θ = 30°** au-dessus de la cuve, ou choisissez **11 · Angle θ et premier minimum** dans **Expériences**. Avec `a = 0,40 m` et `λ = 0,20 m`, le panneau théorique montre `θ₁ = 30°` et une amplitude nulle dans cette direction. Ce schéma de Fraunhofer en champ lointain reste distinct du champ numérique de la cuve. Sur téléphone, la bibliothèque d’expériences se trouve plus bas dans la page.
+
 L’analyse comprend deux sondes, leurs courbes, un temps d’arrivée défini par un seuil, une règle, une coupe et un profil angulaire mesuré dans le champ calculé. La comparaison côte à côte fait principalement varier la largeur de fente ; les autres paramètres sont communs. Les captures PNG contiennent les paramètres, qui peuvent aussi être exportés et importés en JSON.
 
 ## Vérifier et compiler
@@ -64,7 +66,7 @@ Le script `npm run test:browser` est un contrôle de navigateur complémentaire.
 
 - `src/physics/` : solveur et vérifications scientifiques.
 - `src/components/` : cuve, outils, graphiques et aide.
-- `src/data/experiments.ts` : dix expériences avec objectifs et prédictions.
+- `src/data/experiments.ts` : onze expériences avec objectifs et prédictions.
 - `src/types.ts` : paramètres et unités du modèle.
 - `docs/` : guide français et justification numérique.
 

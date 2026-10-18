@@ -74,4 +74,11 @@ export const EXPERIMENTS: Experiment[] = [
     explanation: 'Comparez des états issus du même départ et vérifiez les paramètres des deux cuves. Les prédictions restent à confronter aux résultats réellement calculés.',
     parameters: { ...base, source: 'plane', obstacle: 'slit', aperture: 0.1 }, mode: 'comparison',
   },
+  {
+    id: 'theta', title: '11 · Angle θ et premier minimum', shortTitle: 'Angle θ et premier minimum', category: 'Diffraction',
+    objective: 'Repérer le premier minimum théorique et l’angle qui délimite le lobe central.',
+    prediction: 'Dans le modèle idéal de Fraunhofer, a = 0,40 m et λ = 0,20 m donnent θ₁ = 30° et une amplitude nulle à ±30°.',
+    explanation: 'Le panneau de théorie montre les directions des minima et leur amplitude. La cuve numérique à distance finie est distincte ; ces repères ne sont pas des nœuds mesurés dans le solveur. Des lobes secondaires subsistent au-delà du premier minimum.',
+    parameters: { ...base, source: 'plane', obstacle: 'slit', aperture: 0.4, sourceAngle: 0, resolution: 'precision' }, mode: 'discovery',
+  },
 ];

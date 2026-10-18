@@ -4,6 +4,7 @@ export function HelpContent() {
       <p className="eyebrow">Le modèle, le calcul et ses limites</p>
       <h2>Comment fonctionne la simulation ?</h2>
       <p>La cuve représente une surface en deux dimensions. Chaque point porte une élongation verticale η, calculée à partir de ses voisins. La vue en relief affiche ces mêmes valeurs : elle ne fabrique pas une autre animation.</p>
+      <p>Sur ordinateur, la colonne des expériences et des paramètres défile séparément. La molette au-dessus de la cuve fait défiler la page ; le bouton de loupe permet d’activer le zoom, puis de le désactiver. Sur téléphone, le glissement vertical reste disponible tant que le zoom est désactivé.</p>
 
       <section className="card">
         <h3>1. Une onde mécanique simplifiée</h3>
@@ -62,6 +63,9 @@ export function HelpContent() {
         <p>Pour une fente idéale et en champ lointain, l’approximation de Fraunhofer prévoit :</p>
         <p className="equation">I(θ)/I(0) = [sin(β)/β]², avec β = πa sin(θ)/λ</p>
         <p>Au centre, la limite vaut 1. Les minima théoriques satisfont a sin(θ) = mλ pour les entiers m non nuls dont l’angle existe. Ce profil analytique suppose notamment une ouverture uniformément éclairée. Il ne décrit pas automatiquement le champ proche, un obstacle circulaire ou toutes les réflexions de la cuve.</p>
+        <p>Pour montrer le premier minimum, cliquez sur <strong>Voir le cas θ = 30°</strong> au-dessus de la cuve, ou choisissez <strong>11 · Angle θ et premier minimum</strong> dans <strong>Expériences</strong>. Sur téléphone, cette bibliothèque se trouve plus bas dans la page. Avec a = 0,40 m et λ = 0,20 m, sin θ₁ = λ/a = 0,5 : θ₁ vaut 30°. Le panneau pédagogique, placé avant la cuve, trace l’axe et les directions ±θ₁ ; le bouton <strong>Premier minimum</strong> place le curseur au zéro de l’amplitude théorique A(θ)/A(0) = |sin β/β|. <strong>Rétablir le cas θ = 30°</strong> retrouve les paramètres et l’incidence normale de cette démonstration.</p>
+        <p>θ₁ est le demi-angle du lobe central, dont l’ouverture totale vaut 2θ₁. Les lobes secondaires au-delà des minima ne disparaissent pas. Si a &lt; λ, aucun premier minimum n’existe ; si a = λ, il est à 90°, en direction rasante. L’approximation θ₁ ≈ λ/a donne un angle en radians et n’est valable qu’aux petits angles.</p>
+        <p>Ce schéma représente le modèle idéal en champ lointain. Son zéro analytique ne force aucune amplitude à zéro dans la cuve ; il ne démontre pas que le champ FDTD, dans un domaine fini, présente un zéro au même angle.</p>
         <p>Un autre profil mesure réellement A²(θ)/A²(0) dans le champ numérique, sur un arc en aval entre −60° et +60°. Son rayon s’adapte pour éviter la couche amortissante. Le nombre de Fresnel a²/(λr) renseigne sur la distance : au-dessus de 0,1, aucune comparaison quantitative avec Fraunhofer ; en dessous, les autres hypothèses restent nécessaires. En double fente, l’étendue complète des deux ouvertures compte également.</p>
         <p>La page de validation distingue ces prédictions des mesures réellement effectuées. Un résultat numérique peut différer de la théorie à cause du maillage, des frontières ou des conditions de l’expérience.</p>
       </section>

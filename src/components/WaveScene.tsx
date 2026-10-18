@@ -9,6 +9,7 @@ export interface WaveSceneProps {
   engine: WaveEngine;
   display: DisplayField;
   camera: CameraView;
+  zoomEnabled: boolean;
   exaggeration: number;
   huygens: boolean;
   huygensStep: number;
@@ -48,7 +49,7 @@ function CanvasFallback() {
   </div>;
 }
 
-function CameraControls({ view }: { view: CameraView }) {
+function CameraControls({ view, zoomEnabled }: { view: CameraView; zoomEnabled: boolean }) {
   const { camera, gl, size, invalidate } = useThree();
   const controls = useRef<OrbitControls | null>(null);
   const destination = useRef(new THREE.Vector3(2.05, 2.4, 2.5));
@@ -76,6 +77,15 @@ function CameraControls({ view }: { view: CameraView }) {
     instance.target.set(0, 0, 0);
     return () => { instance.dispose(); controls.current = null; };
   }, [camera, gl]);
+  useEffect(() => {
+    const instance = controls.current;
+    if (!instance) return;
+    // Return wheel and vertical touch gestures to the page until zoom is chosen.
+    instance.enableZoom = zoomEnabled;
+    instance.touches.ONE = zoomEnabled ? THREE.TOUCH.ROTATE : undefined;
+    instance.touches.TWO = zoomEnabled ? THREE.TOUCH.DOLLY_PAN : undefined;
+    gl.domElement.style.touchAction = zoomEnabled ? 'none' : 'pan-y';
+  }, [zoomEnabled, gl]);
   useEffect(() => {
     const instance = controls.current;
     if (!instance) return;
@@ -533,7 +543,7 @@ function Scene(props: WaveSceneProps) {
     <hemisphereLight args={['#e5ffff', '#23334d', 1.4]} />
     <directionalLight position={[-1, 5, 2]} intensity={2.2} color="#e3fffa" />
     <directionalLight position={[3, 2, -3]} intensity={1.1} color="#94c9ff" />
-    <CameraControls view={props.camera} />
+    <CameraControls view={props.camera} zoomEnabled={props.zoomEnabled} />
     <Tank engine={props.engine} dark={props.dark} />
     <FieldSurface engine={props.engine} display={props.display} exaggeration={props.exaggeration} onPick={props.onPick} />
     <Obstacles engine={props.engine} />
@@ -553,7 +563,7 @@ export function WaveScene(props: WaveSceneProps) {
         gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' }}
         fallback={<CanvasFallback />}
         onCreated={({ gl }) => { gl.setClearColor(props.dark ? '#09121f' : '#e1e9ed'); props.onCanvasReady?.(gl.domElement); }}
-        style={{ touchAction: 'none' }}
+        style={{ touchAction: props.zoomEnabled ? 'none' : 'pan-y' }}
       >
         <Scene {...props} />
       </Canvas>
