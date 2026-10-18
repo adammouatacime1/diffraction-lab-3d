@@ -6,8 +6,8 @@ Les commandes de lancement sont présentées dans une carte explicative ; aucune
 
 Durée : environ **10 min 21 s**, en 22 chapitres. Le support structuré de narration se trouve dans [scripts/video/chapters.json](../scripts/video/chapters.json).
 
-- [Vidéo MP4 à télécharger](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/presentation-professeur.mp4)
-- [Aperçu de la voix de synthèse, environ 9 secondes](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/extrait-voix-francaise.mp3)
+- [Vidéo MP4 à télécharger](https://raw.githubusercontent.com/adammouatacime1/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/presentation-professeur.mp4)
+- [Aperçu de la voix de synthèse, environ 9 secondes](https://raw.githubusercontent.com/adammouatacime1/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/extrait-voix-francaise.mp3)
 - [Repères de lecture](video/chapitres.txt)
 - [Sous-titres français SRT](video/presentation-professeur.srt)
 - [Texte à lire pour enregistrer une vraie voix humaine](video/narration-voix-humaine.txt)

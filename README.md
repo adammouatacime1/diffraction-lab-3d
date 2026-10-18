@@ -2,7 +2,7 @@
 
 Laboratoire de mécanique ondulatoire en français : une équation d’onde calculée sur une grille 2D, affichée sous forme de cuve 3D. Projet pédagogique pour la deuxième année du Baccalauréat Sciences Mathématiques.
 
-**[Ouvrir le laboratoire en ligne](https://amouata.github.io/diffraction-lab-3d/)** — accessible directement dans le navigateur, sans installation. Le site est publié avec GitHub Pages depuis la branche `gh-pages`.
+**[Ouvrir le laboratoire en ligne](https://adammouatacime1.github.io/diffraction-lab-3d/)** — accessible directement dans le navigateur, sans installation. Le site est publié avec GitHub Pages depuis la branche `gh-pages`.
 
 Le modèle est **scalaire, linéaire et non dispersif**. Il permet d’étudier propagation, diffraction, réflexion et interférences ; il ne simule pas toute la physique des vagues réelles. La vue 3D, les cartes et les sondes utilisent le même champ numérique.
 
@@ -16,8 +16,8 @@ Capture réelle de l’application, obtenue pendant la vérification dans Chromi
 
 La visite guidée dure environ **10 min 21 s**. Elle montre 22 chapitres de manipulations réelles, avec une **voix de synthèse neuronale française Kokoro**, des sous-titres incrustés et des repères de chapitre.
 
-- [Télécharger la vidéo MP4](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/presentation-professeur.mp4)
-- [Écouter un aperçu de la voix de synthèse (9 secondes)](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/extrait-voix-francaise.mp3)
+- [Télécharger la vidéo MP4](https://raw.githubusercontent.com/adammouatacime1/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/presentation-professeur.mp4)
+- [Écouter un aperçu de la voix de synthèse (9 secondes)](https://raw.githubusercontent.com/adammouatacime1/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/extrait-voix-francaise.mp3)
 - [Consulter le déroulé et le commentaire français](docs/VIDEO-PROFESSEUR.md)
 - [Accéder aux fichiers vidéo, sous-titres et contrôles](docs/video/)
 
@@ -82,4 +82,4 @@ Le dossier `dist`, produit par `npm run build`, peut être publié chez un hébe
 
 ## Mettre le laboratoire en ligne
 
-Pour obtenir une adresse partageable avec le professeur, suivez le [guide de mise en ligne](docs/MISE-EN-LIGNE.md). Une [archive du site déjà compilé](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/site/diffraction-lab-website.zip) permet de publier le laboratoire avec Netlify Drop, sans installer Node.js sur votre ordinateur.
+Pour obtenir une adresse partageable avec le professeur, suivez le [guide de mise en ligne](docs/MISE-EN-LIGNE.md). Une [archive du site déjà compilé](https://raw.githubusercontent.com/adammouatacime1/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/site/diffraction-lab-website.zip) permet de publier le laboratoire avec Netlify Drop, sans installer Node.js sur votre ordinateur.
