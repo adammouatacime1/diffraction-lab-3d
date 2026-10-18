@@ -77,3 +77,7 @@ L’amplitude et la phase sont des estimations harmoniques sur la dernière pér
 Les fichiers de l’application sont dans ce dépôt. Pour les intégrer, créez une branche de travail, examinez les changements et ouvrez une demande de fusion vers `main`. Incluez `package-lock.json` pour conserver les versions vérifiées. Les dossiers `node_modules`, `dist` et `test-results` sont générés et ignorés par Git.
 
 Le dossier `dist`, produit par `npm run build`, peut être publié chez un hébergeur de sites statiques. Une publication de l’environnement cloud conserve les outils et les fichiers ; elle ne constitue pas une mise en ligne publique de l’application.
+
+## Mettre le laboratoire en ligne
+
+Pour obtenir une adresse partageable avec le professeur, suivez le [guide de mise en ligne](docs/MISE-EN-LIGNE.md). Une [archive du site déjà compilé](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/site/diffraction-lab-website.zip) permet de publier le laboratoire avec Netlify Drop, sans installer Node.js sur votre ordinateur.
