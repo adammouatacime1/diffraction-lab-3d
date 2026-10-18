@@ -1,0 +1,22 @@
+00:00 — Bienvenue dans Diffraction Lab 3D
+00:31 — Se repérer dans le laboratoire
+01:01 — Lecture et temps physique
+01:29 — Fréquence, période, célérité et amplitude
+01:58 — Choisir et orienter les sources
+02:27 — Caméras et relief visuel
+02:51 — Comprendre le rapport d’ouverture
+03:22 — Obstacles et géométries
+03:51 — Les bords de la cuve
+04:15 — Résolution et stabilité numérique
+04:43 — Huygens : du front aux ondelettes
+05:10 — Huygens : distinguer illustration et calcul
+05:41 — Lire les trois cartes physiques
+06:10 — Deux sondes et leurs signaux
+06:39 — Mesurer une arrivée
+07:03 — Règle et coupe spatiale
+07:30 — Profil angulaire et Fraunhofer
+07:59 — Interférences, minima et maxima
+08:25 — Comparer deux cuves
+08:51 — Exporter et retrouver une expérience
+09:20 — Préparer la présentation au professeur
+09:48 — Validation scientifique et limites

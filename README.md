@@ -10,6 +10,16 @@ Capture réelle de l’application, obtenue pendant la vérification dans Chromi
 
 ![Diffraction calculée par une fente étroite dans le laboratoire 3D](docs/captures/laboratoire.png)
 
+## Vidéo pour le professeur
+
+La visite guidée dure environ **10 min 21 s**. Elle montre 22 chapitres de manipulations réelles, avec une **voix de synthèse française**, des sous-titres incrustés et des repères de chapitre.
+
+- [Télécharger la vidéo MP4](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/presentation-professeur.mp4)
+- [Consulter le déroulé et le commentaire français](docs/VIDEO-PROFESSEUR.md)
+- [Accéder aux fichiers vidéo, sous-titres et contrôles](docs/video/)
+
+Le MP4 se lit avec le lecteur vidéo de Windows ou VLC, sans lancer l’application. Les résultats montrés sur la page de validation ont été calculés pendant le tournage.
+
 ## Ouvrir l’application
 
 Installez [Node.js](https://nodejs.org/) (version 22 LTS recommandée), puis ouvrez un terminal dans le dossier du projet :
