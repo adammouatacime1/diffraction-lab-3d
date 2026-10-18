@@ -1,12 +1,13 @@
 # Diffraction Lab 3D — vidéo de présentation au professeur
 
-Ce document constitue le script de la visite vidéo en français. La narration utilise une voix de synthèse, annoncée dans l’introduction. Les images montrent l’application réelle. Les prévisions qualitatives sont formulées comme des attentes ; aucune valeur de mesure ni aucun résultat de validation n’est inventé.
+Ce document constitue le script de la visite vidéo en français. La narration utilise désormais une voix de synthèse neuronale française Kokoro, en remplacement de la première voix eSpeak. La synthèse vocale est annoncée dans l’introduction ; aucun enregistrement humain n’a été réalisé pour cette narration. Les images montrent l’application réelle. Les prévisions qualitatives sont formulées comme des attentes ; aucune valeur de mesure ni aucun résultat de validation n’est inventé.
 
 Les commandes de lancement sont présentées dans une carte explicative ; aucune séquence ne prétend montrer un système Windows exécuté dans le cloud.
 
 Durée : environ **10 min 21 s**, en 22 chapitres. Le support structuré de narration se trouve dans [scripts/video/chapters.json](../scripts/video/chapters.json).
 
 - [Vidéo MP4 à télécharger](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/presentation-professeur.mp4)
+- [Aperçu de la voix de synthèse, environ 9 secondes](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/extrait-voix-francaise.mp3)
 - [Repères de lecture](video/chapitres.txt)
 - [Sous-titres français SRT](video/presentation-professeur.srt)
 - [Texte à lire pour enregistrer une vraie voix humaine](video/narration-voix-humaine.txt)

@@ -12,9 +12,10 @@ Capture réelle de l’application, obtenue pendant la vérification dans Chromi
 
 ## Vidéo pour le professeur
 
-La visite guidée dure environ **10 min 21 s**. Elle montre 22 chapitres de manipulations réelles, avec une **voix de synthèse française**, des sous-titres incrustés et des repères de chapitre.
+La visite guidée dure environ **10 min 21 s**. Elle montre 22 chapitres de manipulations réelles, avec une **voix de synthèse neuronale française Kokoro**, des sous-titres incrustés et des repères de chapitre.
 
 - [Télécharger la vidéo MP4](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/presentation-professeur.mp4)
+- [Écouter un aperçu de la voix de synthèse (9 secondes)](https://raw.githubusercontent.com/amouata/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/video/extrait-voix-francaise.mp3)
 - [Consulter le déroulé et le commentaire français](docs/VIDEO-PROFESSEUR.md)
 - [Accéder aux fichiers vidéo, sous-titres et contrôles](docs/video/)
 
