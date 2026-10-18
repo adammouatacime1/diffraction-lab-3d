@@ -1,5 +1,9 @@
 # Publier Diffraction Lab 3D comme site web
 
+Le laboratoire est désormais en ligne : **https://amouata.github.io/diffraction-lab-3d/**. Cette adresse peut être partagée directement avec le professeur. La publication GitHub Pages utilise la branche `gh-pages`, qui contient les fichiers compilés du site et un fichier `.nojekyll`. La branche `main` n’a pas été modifiée.
+
+Pour actualiser ce site, recompilez les sources avec `npm ci` puis `npm run build`, et publiez le contenu de `dist` à la racine de `gh-pages`, en conservant `.nojekyll`. GitHub Pages reconstruit ensuite la publication. Les instructions Netlify ci-dessous restent une autre possibilité d’hébergement.
+
 Le laboratoire est déjà une application web. Il suffit d’héberger sa version compilée pour obtenir une adresse que le professeur peut ouvrir dans son navigateur. Aucun serveur de calcul, base de données ou clé d’API n’est nécessaire.
 
 ## Méthode simple : envoyer le site déjà compilé

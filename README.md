@@ -2,6 +2,8 @@
 
 Laboratoire de mécanique ondulatoire en français : une équation d’onde calculée sur une grille 2D, affichée sous forme de cuve 3D. Projet pédagogique pour la deuxième année du Baccalauréat Sciences Mathématiques.
 
+**[Ouvrir le laboratoire en ligne](https://amouata.github.io/diffraction-lab-3d/)** — accessible directement dans le navigateur, sans installation. Le site est publié avec GitHub Pages depuis la branche `gh-pages`.
+
 Le modèle est **scalaire, linéaire et non dispersif**. Il permet d’étudier propagation, diffraction, réflexion et interférences ; il ne simule pas toute la physique des vagues réelles. La vue 3D, les cartes et les sondes utilisent le même champ numérique.
 
 ## Aperçu du laboratoire
