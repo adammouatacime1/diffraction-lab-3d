@@ -350,7 +350,7 @@ function ThetaOverlay({ engine }: { engine: WaveEngine }) {
     <mesh geometry={geometry.rays}><meshBasicMaterial color="#ffb331" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
     <mesh geometry={geometry.arc}><meshBasicMaterial color="#ffdc75" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
     <Label text={`θ = ${overlay.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}°`} position={position(label, 0.12)} scale={0.1} screenHeight={32} color="#fff3c4" outline />
-    {overlay.rays.map(ray => <Label key={ray.angleDegrees} text={ray.angleDegrees > 0 ? '+θ₁' : '−θ₁'} position={position({ x: overlay.origin.x + (ray.end.x - overlay.origin.x) * 0.78, y: overlay.origin.y + (ray.end.y - overlay.origin.y) * 0.78 })} scale={0.09} screenHeight={26} color="#ffd47b" outline />)}
+    {overlay.rays.map(ray => <Label key={ray.angleDegrees} text={ray.angleDegrees > 0 ? '+θ₁' : '−θ₁'} position={position({ x: overlay.origin.x + (ray.end.x - overlay.origin.x) * 0.62, y: overlay.origin.y + (ray.end.y - overlay.origin.y) * 0.62 })} scale={0.09} screenHeight={26} color="#ffd47b" outline />)}
   </group>;
 }
 
