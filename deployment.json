@@ -1,0 +1,10 @@
+{
+  "application": "Diffraction Lab 3D",
+  "source_commit": "76e086d57ae37d06bd0b680e613feaab5c093a9d",
+  "files_sha256": {
+    "assets/index-CTU2fKBJ.js": "eb4415a295a563355ac6f016871f0b81a5315029ee5e824e50fef08a215a6a07",
+    "assets/index-CnM0ILSj.css": "2417dc410f6b3574ad43581dfbb3f37152c5cf46610e34c215351d588acbe72a",
+    "favicon.svg": "6f5b59a81ed8250a44cebd974b090a937641a8de062b8ba93f831aceb2fb47a7",
+    "index.html": "c022c1a48eeb77a847c00d3ea100e3b7f5cf762bf8197e7220cfc54c0b7ceacd"
+  }
+}
