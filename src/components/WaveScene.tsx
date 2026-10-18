@@ -4,12 +4,14 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { WaveEngine } from '../physics/WaveEngine';
 import type { CameraView, DisplayField, ProbePosition } from '../types';
+import { thetaOverlay } from '../physics/thetaOverlay';
 
 export interface WaveSceneProps {
   engine: WaveEngine;
   display: DisplayField;
   camera: CameraView;
   zoomEnabled: boolean;
+  showTheta: boolean;
   exaggeration: number;
   huygens: boolean;
   huygensStep: number;
@@ -266,7 +268,17 @@ function Obstacles({ engine }: { engine: WaveEngine }) {
   </mesh>;
 }
 
-function Label({ text, position, scale = 0.1, color = '#9eb3c8' }: { text: string; position: [number, number, number]; scale?: number; color?: string }) {
+function Label({ text, position, scale = 0.1, color = '#9eb3c8', outline = false, screenHeight }: { text: string; position: [number, number, number]; scale?: number; color?: string; outline?: boolean; screenHeight?: number }) {
+  const sprite = useRef<THREE.Sprite>(null);
+  const { camera, size } = useThree();
+  const projected = useMemo(() => new THREE.Vector3(), []);
+  useFrame(() => {
+    if (!screenHeight || !sprite.current || !(camera instanceof THREE.PerspectiveCamera)) return;
+    sprite.current.getWorldPosition(projected);
+    const depth = -projected.applyMatrix4(camera.matrixWorldInverse).z;
+    const worldHeight = screenHeight * 2 * depth * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) / size.height;
+    if (worldHeight > 0) sprite.current.scale.set(worldHeight * 3.2, worldHeight, 1);
+  });
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 256;
@@ -277,16 +289,69 @@ function Label({ text, position, scale = 0.1, color = '#9eb3c8' }: { text: strin
       context.fillStyle = color;
       context.textAlign = 'center';
       context.textBaseline = 'middle';
+      if (outline) { context.strokeStyle = '#102635'; context.lineWidth = 7; context.lineJoin = 'round'; context.strokeText(text, 128, 40); }
       context.fillText(text, 128, 40);
     }
     const result = new THREE.CanvasTexture(canvas);
     result.colorSpace = THREE.SRGBColorSpace;
     return result;
-  }, [text, color]);
+  }, [text, color, outline]);
   useEffect(() => () => texture.dispose(), [texture]);
-  return <sprite position={position} scale={[scale * 3.2, scale, 1]}>
+  return <sprite ref={sprite} position={position} scale={[scale * 3.2, scale, 1]}>
     <spriteMaterial map={texture} transparent depthWrite={false} depthTest={false} />
   </sprite>;
+}
+
+function ThetaOverlay({ engine }: { engine: WaveEngine }) {
+  const overlay = useMemo(() => thetaOverlay(engine.parameters, engine.grid), [engine.parameters, engine.grid]);
+  const geometry = useMemo(() => {
+    if (!overlay.ready) return null;
+    const { width, height } = engine.grid;
+    const stroke = (paths: ProbePosition[][], thickness: number) => {
+      const positions: number[] = [];
+      for (const points of paths) for (let i = 1; i < points.length; i++) {
+        const a = points[i - 1], b = points[i];
+        const length = Math.hypot(b.x - a.x, b.y - a.y);
+        if (!length) continue;
+        const nx = -(b.y - a.y) / length * thickness / 2;
+        const ny = (b.x - a.x) / length * thickness / 2;
+        const vertices = [[a.x + nx, a.y + ny], [a.x - nx, a.y - ny], [b.x + nx, b.y + ny], [b.x + nx, b.y + ny], [a.x - nx, a.y - ny], [b.x - nx, b.y - ny]];
+        vertices.forEach(([x, y]) => positions.push(x - width / 2, 0.075, y - height / 2));
+      }
+      const result = new THREE.BufferGeometry();
+      result.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      return result;
+    };
+    const dashed = (end: ProbePosition) => {
+      const start = overlay.origin, length = Math.hypot(end.x - start.x, end.y - start.y);
+      const paths: ProbePosition[][] = [];
+      for (let distance = 0; distance < length; distance += 0.09) {
+        paths.push([distance, Math.min(distance + 0.058, length)].map(d => ({ x: start.x + (end.x - start.x) * d / length, y: start.y + (end.y - start.y) * d / length })));
+      }
+      return paths;
+    };
+    const arc = Array.from({ length: 49 }, (_, i) => {
+      const angle = overlay.angleDegrees * Math.PI / 180 * i / 48;
+      return { x: overlay.origin.x + overlay.arcRadius * Math.cos(angle), y: overlay.origin.y - overlay.arcRadius * Math.sin(angle) };
+    });
+    return {
+      axis: stroke(dashed(overlay.axisEnd), 0.009),
+      rays: stroke(overlay.rays.flatMap(ray => dashed(ray.end)), 0.014),
+      arc: stroke([arc], 0.012),
+    };
+  }, [overlay, engine.grid]);
+  useEffect(() => () => { if (geometry) Object.values(geometry).forEach(value => value.dispose()); }, [geometry]);
+  if (!overlay.ready || !geometry) return null;
+  const position = (p: ProbePosition, lift = 0.1): [number, number, number] => [p.x - engine.grid.width / 2, lift, p.y - engine.grid.height / 2];
+  const halfAngle = overlay.angleDegrees * Math.PI / 360;
+  const label = { x: overlay.origin.x + overlay.arcRadius * 1.7 * Math.cos(halfAngle), y: overlay.origin.y - overlay.arcRadius * 1.7 * Math.sin(halfAngle) };
+  return <group name="theoretical-theta-overlay" renderOrder={40}>
+    <mesh geometry={geometry.axis}><meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
+    <mesh geometry={geometry.rays}><meshBasicMaterial color="#ffb331" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
+    <mesh geometry={geometry.arc}><meshBasicMaterial color="#ffdc75" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
+    <Label text={`θ = ${overlay.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}°`} position={position(label, 0.12)} scale={0.1} screenHeight={32} color="#fff3c4" outline />
+    {overlay.rays.map(ray => <Label key={ray.angleDegrees} text={ray.angleDegrees > 0 ? '+θ₁' : '−θ₁'} position={position({ x: overlay.origin.x + (ray.end.x - overlay.origin.x) * 0.78, y: overlay.origin.y + (ray.end.y - overlay.origin.y) * 0.78 })} scale={0.09} screenHeight={26} color="#ffd47b" outline />)}
+  </group>;
 }
 
 function Tank({ engine, dark }: { engine: WaveEngine; dark: boolean }) {
@@ -550,12 +615,14 @@ function Scene(props: WaveSceneProps) {
     <SourceIndicators engine={props.engine} />
     <ProbeMarkers probes={props.probes} engine={props.engine} />
     <FieldFeatures engine={props.engine} showNodes={props.showNodes} nodeThreshold={props.nodeThreshold} showMaxima={props.showMaxima} />
+    {props.showTheta && <ThetaOverlay engine={props.engine} />}
     {props.huygens && props.huygensStep > 1 && props.huygensStep < 7 && <HuygensOverlay engine={props.engine} step={props.huygensStep} count={props.secondaryCount} exaggeration={props.exaggeration} />}
   </>;
 }
 
 export function WaveScene(props: WaveSceneProps) {
-  return <div className="wave-scene" style={{ position: 'relative', width: '100%', height: '100%', minHeight: 300 }}>
+  const angle = props.showTheta ? thetaOverlay(props.engine.parameters, props.engine.grid) : null;
+  return <div className="wave-scene" style={{ position: 'relative', width: '100%', height: '100%', minHeight: 300, touchAction: props.zoomEnabled ? 'none' : 'pan-y' }}>
     <SceneBoundary>
       <Canvas
         camera={{ position: [2.05, 2.4, 2.5], fov: 38, near: 0.01, far: 30 }}
@@ -568,5 +635,8 @@ export function WaveScene(props: WaveSceneProps) {
         <Scene {...props} />
       </Canvas>
     </SceneBoundary>
+    {angle && <div className="theta-scene-note" role="status">
+      {angle.ready ? <><strong>θ₁ = {angle.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}° · plan horizontal</strong><span>Minima théoriques de Fraunhofer<br/>Repères, pas des nœuds mesurés</span></> : <span>{angle.message}</span>}
+    </div>}
   </div>;
 }

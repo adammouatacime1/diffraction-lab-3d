@@ -84,6 +84,12 @@ La relation utilisée est `sin θ₁ = λ/a`. L’approximation scolaire `θ₁ 
 
 Ce panneau ne modifie pas le champ calculé dans la cuve. Son zéro est une prédiction du modèle idéal, pas une mesure FDTD : la cuve finie peut rester en champ proche et contenir des réflexions. N’interprétez donc pas une couleur ou une élongation momentanément nulle dans la cuve comme la preuve de ce minimum d’amplitude.
 
+### Repérer θ directement sur la cuve
+
+Cochez **Afficher θ sur la cuve** près de la vue pour ajouter l’axe, les directions théoriques `±θ₁`, un arc et la valeur de l’angle sur la cuve numérique. Choisissez la caméra **Dessus** pour faciliter leur lecture. Cette annotation est disponible pour une onde plane en incidence normale traversant une seule fente, lorsque le premier minimum est dans une direction non rasante (`a > λ`). La source doit être à gauche de la barrière et l’ouverture entièrement dans la cuve. L’activation choisit la vue du dessus. Cette annotation indique la prédiction de Fraunhofer ; les rayons ne sont ni des nœuds mesurés du champ FDTD, ni une modification de l’amplitude calculée.
+
+Avec une fente trop étroite (`a < λ`), un message explique l’absence de premier minimum. Le bouton **Charger le cas θ = 30°** prépare alors `a = 0,40 m` et `λ = 0,20 m`. À `a = λ`, les directions du premier zéro sont rasantes (±90°), le long de la barrière : ce cas limite ne montre pas deux rayons qui s’écartent vers l’aval. En mode **Comparaison**, chaque cuve utilise sa propre largeur d’ouverture pour son annotation et son message ; des angles différents ou l’absence de minimum dans l’une des cuves sont donc possibles.
+
 ## Huygens, étape par étape
 
 Ouvrez le mode **Huygens** et vérifiez que l’interrupteur **Visualisation de Huygens** est activé. Les boutons numérotés et **Suivant** font avancer l’explication ; l’interrupteur permet de masquer l’illustration à tout moment.
