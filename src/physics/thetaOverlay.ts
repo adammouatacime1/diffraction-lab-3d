@@ -3,12 +3,20 @@ import type { Grid, Parameters, ProbePosition } from '../types';
 
 export type ThetaOverlay = { ready: false; message: string } | {
   ready: true;
+  kind: 'minimum' | 'observation';
   angleDegrees: number;
+  axisAngleDegrees: number;
+  originLabel: string;
   origin: ProbePosition;
   axisEnd: ProbePosition;
   rays: { angleDegrees: number; end: ProbePosition }[];
   arcRadius: number;
 };
+
+export type ThetaMode = 'minimum' | 'observation';
+export function angleOverlay(parameters: Parameters, grid: Pick<Grid, 'width' | 'height' | 'dx'>, mode: ThetaMode, observationAngle: number): ThetaOverlay {
+  return mode === 'observation' ? observationOverlay(parameters, grid, observationAngle) : thetaOverlay(parameters, grid);
+}
 
 /** Theoretical directions only; this does not read or alter the computed field. */
 export function thetaOverlay(parameters: Parameters, grid: Pick<Grid, 'width' | 'height' | 'dx'>): ThetaOverlay {
@@ -43,8 +51,44 @@ export function thetaOverlay(parameters: Parameters, grid: Pick<Grid, 'width' | 
   });
   const shortest = Math.min(...rays.map(ray => Math.hypot(ray.end.x - origin.x, ray.end.y - origin.y)), grid.width - margin - origin.x);
   return {
-    ready: true, angleDegrees: angle, origin,
+    ready: true, kind: 'minimum', angleDegrees: angle, axisAngleDegrees: 0, originLabel: 'Normale à la fente', origin,
     axisEnd: { x: grid.width - margin, y: origin.y }, rays,
     arcRadius: Math.min(0.24, shortest * 0.3),
+  };
+}
+
+/** A geometric observation direction; it makes no claim about field minima. */
+export function observationOverlay(parameters: Parameters, grid: Pick<Grid, 'width' | 'height' | 'dx'>, angleDegrees: number): ThetaOverlay {
+  const p = parameters;
+  if (!Number.isFinite(angleDegrees) || Math.abs(angleDegrees) > 80) {
+    return { ready: false, message: 'Choisissez un angle d’observation entre −80° et +80°.' };
+  }
+  if (p.source === 'pair' || (p.obstacle !== 'slit' && p.obstacle !== 'none')) {
+    return { ready: false, message: 'Le repère d’observation est disponible avec une source unique et une fente simple, ou sans obstacle.' };
+  }
+  const slit = p.obstacle === 'slit';
+  if (slit && Math.abs(p.sourceX - p.obstacleX) <= Math.max(0.0175, grid.dx)) {
+    return { ready: false, message: 'Éloignez la source de la barrière pour définir le côté d’observation.' };
+  }
+  const origin = slit ? { x: p.obstacleX, y: p.obstacleY } : { x: p.sourceX, y: p.sourceY };
+  const margin = 0.045;
+  if (origin.x <= margin || origin.x >= grid.width - margin || origin.y <= margin || origin.y >= grid.height - margin) {
+    return { ready: false, message: 'Déplacez l’origine du repère à l’intérieur de la cuve.' };
+  }
+  const axisAngleDegrees = slit && p.sourceX > p.obstacleX ? 180 : 0;
+  const endpoint = (angle: number): ProbePosition => {
+    const radians = angle * Math.PI / 180;
+    const dx = Math.cos(radians), dy = -Math.sin(radians);
+    const xDistance = dx > 1e-12 ? (grid.width - margin - origin.x) / dx : dx < -1e-12 ? (margin - origin.x) / dx : Infinity;
+    const yDistance = dy > 1e-12 ? (grid.height - margin - origin.y) / dy : dy < -1e-12 ? (margin - origin.y) / dy : Infinity;
+    const length = Math.min(xDistance, yDistance);
+    return { x: origin.x + length * dx, y: origin.y + length * dy };
+  };
+  const axisEnd = endpoint(axisAngleDegrees), end = endpoint(axisAngleDegrees + angleDegrees);
+  const shortest = Math.min(Math.hypot(axisEnd.x - origin.x, axisEnd.y - origin.y), Math.hypot(end.x - origin.x, end.y - origin.y));
+  return {
+    ready: true, kind: 'observation', angleDegrees, axisAngleDegrees, origin,
+    originLabel: slit ? `Centre de la fente · normale vers ${axisAngleDegrees === 0 ? '+x' : '−x'}` : 'Origine à la source · référence +x',
+    axisEnd, rays: [{ angleDegrees, end }], arcRadius: Math.min(0.24, shortest * 0.3),
   };
 }

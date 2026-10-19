@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { WaveEngine } from '../physics/WaveEngine';
 import type { CameraView, DisplayField, ProbePosition } from '../types';
-import { thetaOverlay } from '../physics/thetaOverlay';
+import { angleOverlay, type ThetaMode } from '../physics/thetaOverlay';
 
 export interface WaveSceneProps {
   engine: WaveEngine;
@@ -12,6 +12,8 @@ export interface WaveSceneProps {
   camera: CameraView;
   zoomEnabled: boolean;
   showTheta: boolean;
+  thetaMode: ThetaMode;
+  thetaObservationAngle: number;
   exaggeration: number;
   huygens: boolean;
   huygensStep: number;
@@ -302,8 +304,8 @@ function Label({ text, position, scale = 0.1, color = '#9eb3c8', outline = false
   </sprite>;
 }
 
-function ThetaOverlay({ engine }: { engine: WaveEngine }) {
-  const overlay = useMemo(() => thetaOverlay(engine.parameters, engine.grid), [engine.parameters, engine.grid]);
+function ThetaOverlay({ engine, mode, observationAngle }: { engine: WaveEngine; mode: ThetaMode; observationAngle: number }) {
+  const overlay = useMemo(() => angleOverlay(engine.parameters, engine.grid, mode, observationAngle), [engine.parameters, engine.grid, mode, observationAngle]);
   const geometry = useMemo(() => {
     if (!overlay.ready) return null;
     const { width, height } = engine.grid;
@@ -331,7 +333,7 @@ function ThetaOverlay({ engine }: { engine: WaveEngine }) {
       return paths;
     };
     const arc = Array.from({ length: 49 }, (_, i) => {
-      const angle = overlay.angleDegrees * Math.PI / 180 * i / 48;
+      const angle = (overlay.axisAngleDegrees + overlay.angleDegrees * i / 48) * Math.PI / 180;
       return { x: overlay.origin.x + overlay.arcRadius * Math.cos(angle), y: overlay.origin.y - overlay.arcRadius * Math.sin(angle) };
     });
     return {
@@ -343,14 +345,14 @@ function ThetaOverlay({ engine }: { engine: WaveEngine }) {
   useEffect(() => () => { if (geometry) Object.values(geometry).forEach(value => value.dispose()); }, [geometry]);
   if (!overlay.ready || !geometry) return null;
   const position = (p: ProbePosition, lift = 0.1): [number, number, number] => [p.x - engine.grid.width / 2, lift, p.y - engine.grid.height / 2];
-  const halfAngle = overlay.angleDegrees * Math.PI / 360;
+  const halfAngle = (overlay.axisAngleDegrees + overlay.angleDegrees / 2) * Math.PI / 180;
   const label = { x: overlay.origin.x + overlay.arcRadius * 1.7 * Math.cos(halfAngle), y: overlay.origin.y - overlay.arcRadius * 1.7 * Math.sin(halfAngle) };
   return <group name="theoretical-theta-overlay" renderOrder={40}>
     <mesh geometry={geometry.axis}><meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
     <mesh geometry={geometry.rays}><meshBasicMaterial color="#ffb331" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
     <mesh geometry={geometry.arc}><meshBasicMaterial color="#ffdc75" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
     <Label text={`θ = ${overlay.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}°`} position={position(label, 0.12)} scale={0.1} screenHeight={32} color="#fff3c4" outline />
-    {overlay.rays.map(ray => <Label key={ray.angleDegrees} text={ray.angleDegrees > 0 ? '+θ₁' : '−θ₁'} position={position({ x: overlay.origin.x + (ray.end.x - overlay.origin.x) * 0.62, y: overlay.origin.y + (ray.end.y - overlay.origin.y) * 0.62 })} scale={0.09} screenHeight={26} color="#ffd47b" outline />)}
+    {overlay.kind === 'minimum' && overlay.rays.map(ray => <Label key={ray.angleDegrees} text={ray.angleDegrees > 0 ? '+θ₁' : '−θ₁'} position={position({ x: overlay.origin.x + (ray.end.x - overlay.origin.x) * 0.62, y: overlay.origin.y + (ray.end.y - overlay.origin.y) * 0.62 })} scale={0.09} screenHeight={26} color="#ffd47b" outline />)}
   </group>;
 }
 
@@ -615,13 +617,13 @@ function Scene(props: WaveSceneProps) {
     <SourceIndicators engine={props.engine} />
     <ProbeMarkers probes={props.probes} engine={props.engine} />
     <FieldFeatures engine={props.engine} showNodes={props.showNodes} nodeThreshold={props.nodeThreshold} showMaxima={props.showMaxima} />
-    {props.showTheta && <ThetaOverlay engine={props.engine} />}
+    {props.showTheta && <ThetaOverlay engine={props.engine} mode={props.thetaMode} observationAngle={props.thetaObservationAngle} />}
     {props.huygens && props.huygensStep > 1 && props.huygensStep < 7 && <HuygensOverlay engine={props.engine} step={props.huygensStep} count={props.secondaryCount} exaggeration={props.exaggeration} />}
   </>;
 }
 
 export function WaveScene(props: WaveSceneProps) {
-  const angle = props.showTheta ? thetaOverlay(props.engine.parameters, props.engine.grid) : null;
+  const angle = props.showTheta ? angleOverlay(props.engine.parameters, props.engine.grid, props.thetaMode, props.thetaObservationAngle) : null;
   return <div className="wave-scene" style={{ position: 'relative', width: '100%', height: '100%', minHeight: 300, touchAction: props.zoomEnabled ? 'none' : 'pan-y' }}>
     <SceneBoundary>
       <Canvas
@@ -636,7 +638,7 @@ export function WaveScene(props: WaveSceneProps) {
       </Canvas>
     </SceneBoundary>
     {angle && <div className="theta-scene-note" role="status">
-      {angle.ready ? <><strong>θ₁ = {angle.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}° · plan horizontal</strong><span>Minima théoriques de Fraunhofer<br/>Repères, pas des nœuds mesurés</span></> : <span>{angle.message}</span>}
+      {angle.ready ? angle.kind === 'minimum' ? <><strong>θ₁ = {angle.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}° · plan horizontal</strong><span>Minima théoriques de Fraunhofer<br/>Repères, pas des nœuds mesurés</span></> : <><strong>θ = {angle.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}° · observation</strong><span>{angle.originLabel}<br/>Direction géométrique, pas un minimum d’amplitude</span></> : <span>{angle.message}</span>}
     </div>}
   </div>;
 }

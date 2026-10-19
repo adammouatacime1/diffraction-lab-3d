@@ -71,6 +71,30 @@ try {
     assert.equal(notes.length, 2);
     assert.match(notes[0], /30°/); assert.match(notes[1], /14,5°/);
   });
+  await check('La source ponctuelle affiche un angle d’observation explicitement distinct du minimum', async () => {
+    await page.getByRole('tab', { name: 'Découverte', exact: true }).click();
+    await page.getByRole('combobox', { name: 'Source d’onde', exact: true }).selectOption('point');
+    await pause(page);
+    assert.equal(await page.getByRole('combobox', { name: 'Type de repère θ', exact: true }).inputValue(), 'observation');
+    assert.equal(await page.locator('select[aria-label="Type de repère θ"] option[value="minimum"]').evaluate(element => element.disabled), true);
+    assert.match(await page.locator('.theta-scene-note').innerText(), /θ = 30° · observation/);
+    assert.match(await page.locator('.theta-scene-note').innerText(), /pas un minimum d’amplitude/);
+    const canvas = page.locator('canvas').first();
+    const before = await canvas.screenshot();
+    await page.getByRole('slider', { name: 'Angle d’observation sur la cuve', exact: true }).evaluate(element => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(element, '-35');
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    assert.match((await page.locator('.theta-scene-note').innerText()).replace('−', '-'), /θ = -35°/);
+    assert.equal(before.equals(await canvas.screenshot()), false);
+    await page.locator('.simulation-panel').screenshot({ path: `${output}/point-source-slit.png` });
+  });
+  await check('Sans obstacle, l’angle polaire part de la source ponctuelle', async () => {
+    await page.getByRole('combobox', { name: 'Géométrie', exact: true }).selectOption('none');
+    assert.match(await page.locator('.theta-scene-note').innerText(), /Origine à la source · référence \+x/);
+    await page.locator('.simulation-panel').screenshot({ path: `${output}/point-source-free.png` });
+  });
   const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
   mobile.setDefaultTimeout(12_000);
   mobile.on('pageerror', error => errors.push(error.message));
@@ -84,6 +108,13 @@ try {
       assert.equal(await mobile.locator(selector).evaluate(element => getComputedStyle(element).touchAction), 'pan-y');
     }
     await mobile.locator('.simulation-panel').screenshot({ path: `${output}/mobile.png` });
+  });
+  await check('L’angle de la source ponctuelle est accessible et lisible sur téléphone', async () => {
+    await mobile.getByRole('combobox', { name: 'Source d’onde', exact: true }).selectOption('point');
+    assert.match(await mobile.locator('.theta-scene-note').innerText(), /θ = 30° · observation/);
+    assert.equal(await mobile.getByRole('slider', { name: 'Angle d’observation sur la cuve', exact: true }).isVisible(), true);
+    assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth), 390);
+    await mobile.locator('.simulation-panel').screenshot({ path: `${output}/point-source-mobile.png` });
   });
 } finally { await browser.close(); }
 await writeFile(`${output}/browser-report.json`, JSON.stringify({ checks, errors }, null, 2));
