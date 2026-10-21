@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-21T18:39:16.814Z",
+  "productionSubpath": "/cours/physique/laboratoire/",
+  "results": [
+    {
+      "name": "Construction de production et ressources servies dans un sous-dossier",
+      "passed": true
+    },
+    {
+      "name": "Saisie décimale, bornes, saisie invalide et mesures liées",
+      "passed": true
+    },
+    {
+      "name": "Onglets utilisables au clavier et panneau associé",
+      "passed": true
+    },
+    {
+      "name": "Animation, pause, pas à pas et remise à zéro",
+      "passed": true
+    },
+    {
+      "name": "Défilement indépendant du panneau sur ordinateur",
+      "passed": true
+    },
+    {
+      "name": "Fermeture : aucune animation, aucun observer ni écouteur conservé",
+      "passed": true
+    },
+    {
+      "name": "Thèmes et adaptation 320, 390, 768, 1024 et 1440 px",
+      "passed": true
+    },
+    {
+      "name": "Styles du site hôte et thème clair imbriqué dans le thème sombre",
+      "passed": true
+    },
+    {
+      "name": "active=false : arrêt complet sans démontage, puis reprise",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "browser": "154.0.8037.57",
+  "passed": true
+}

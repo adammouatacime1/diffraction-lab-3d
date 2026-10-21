@@ -1,0 +1,6 @@
+/* Standalone page only. Never copy these page rules into an embedded lab. */
+body { margin: 0; }
+.lk-example-site { min-height: 100dvh; }
+.lk-example-site .lk-example-closed { max-width: 800px; margin: 48px auto; padding: 24px; }
+.lk-example-site .lk-example-closed h1 { font-size: 26px; }
+.lk-example-site .lk-example-closed p { line-height: 1.6; }

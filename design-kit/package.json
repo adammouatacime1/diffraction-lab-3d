@@ -1,0 +1,28 @@
+{
+  "name": "laboratory-design-kit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Composants React du laboratoire Diffraction Lab 3D et exemple Vite indépendant",
+  "sideEffects": ["./src/index.ts", "**/*.css"],
+  "scripts": {
+    "dev": "vite example --config example/vite.config.ts --host 0.0.0.0",
+    "build": "tsc -p example/tsconfig.json --noEmit && vite build example --config example/vite.config.ts",
+    "preview": "vite preview example --config example/vite.config.ts --host 0.0.0.0",
+    "verify:browser": "node scripts/verify-browser.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.4.0",
+    "playwright-core": "^1.55.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.0"
+  }
+}

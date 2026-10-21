@@ -1,0 +1,91 @@
+{
+  "sourceCommit": "db725076835a54065b8a59cf7c2b8375f4856e49",
+  "sourceBranch": "livraison-diffraction-lab-3d",
+  "capturedAt": "2026-10-21T18:26:21.212Z",
+  "browser": "154.0.8037.57",
+  "deviceScaleFactor": 1,
+  "parameters": {
+    "source": "plane",
+    "obstacle": "slit",
+    "frequencyHz": 10,
+    "speedMetresPerSecond": 2,
+    "amplitudeMetres": 0.004,
+    "apertureMetres": 0.1,
+    "wavelengthMetres": 0.2,
+    "grid": [
+      201,
+      115
+    ]
+  },
+  "entries": [
+    {
+      "filename": "diffraction-desktop-light.png",
+      "theme": "light",
+      "font": "Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "time": "2,097 s",
+      "selectedExperiment": "03Fente étroite",
+      "camera": "Isométrique",
+      "documentWidth": 1440,
+      "documentHeight": 1432,
+      "viewportWidth": 1440,
+      "viewportHeight": 1000,
+      "background": "rgb(237, 242, 245)",
+      "errors": [],
+      "canvasPresent": true
+    },
+    {
+      "filename": "diffraction-desktop-dark.png",
+      "theme": "dark",
+      "font": "Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "time": "2,097 s",
+      "selectedExperiment": "03Fente étroite",
+      "camera": "Isométrique",
+      "documentWidth": 1440,
+      "documentHeight": 1432,
+      "viewportWidth": 1440,
+      "viewportHeight": 1000,
+      "background": "rgb(18, 28, 36)",
+      "errors": [],
+      "canvasPresent": true
+    },
+    {
+      "filename": "diffraction-mobile-light.png",
+      "theme": "light",
+      "font": "Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "time": "2,097 s",
+      "selectedExperiment": "03Fente étroite",
+      "camera": "Isométrique",
+      "documentWidth": 390,
+      "documentHeight": 2544,
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "background": "rgb(237, 242, 245)",
+      "errors": [],
+      "canvasPresent": true
+    },
+    {
+      "filename": "diffraction-mobile-dark.png",
+      "theme": "dark",
+      "font": "Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "time": "2,097 s",
+      "selectedExperiment": "03Fente étroite",
+      "camera": "Isométrique",
+      "documentWidth": 390,
+      "documentHeight": 2544,
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "background": "rgb(18, 28, 36)",
+      "errors": [],
+      "canvasPresent": true
+    }
+  ],
+  "fontNote": "Famille CSS déclarée et police réellement rendue sont distinctes. Inter n’est ni téléchargée ni fournie par le dépôt. La mesure CDP ci-dessous concerne le titre h1 sur ce système Linux.",
+  "renderedHeadingFonts": [
+    {
+      "familyName": "Liberation Sans",
+      "postScriptName": "LiberationSans-Bold",
+      "isCustomFont": false,
+      "glyphCount": 19
+    }
+  ]
+}

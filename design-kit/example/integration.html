@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vérification d’intégration du kit</title>
+    <style>
+      .host-sentinel { color: rgb(120, 20, 30); font: 18px serif; }
+      .host-sentinel button { color: rgb(120, 20, 30); background: rgb(255, 230, 180); border: 2px solid; padding: 6px; }
+    </style>
+  </head>
+  <body>
+    <section class="host-sentinel"><h1 id="host-title">Site hôte indépendant</h1><button id="host-button">Bouton du site</button></section>
+    <div id="root"></div>
+    <script type="module" src="./src/IntegrationCheck.tsx"></script>
+  </body>
+</html>
