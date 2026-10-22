@@ -1,4 +1,4 @@
-import { DEFAULT_PARAMETERS, type Experiment } from '../types';
+import { DEFAULT_PARAMETERS, SOUND_PARAMETERS, type Experiment } from '../types';
 
 const base = { ...DEFAULT_PARAMETERS, speed: 2, frequency: 10, boundary: 'absorbing' as const };
 
@@ -80,5 +80,102 @@ export const EXPERIMENTS: Experiment[] = [
     prediction: 'Dans le modèle idéal de Fraunhofer, a = 0,40 m et λ = 0,20 m donnent θ₁ = 30° et une amplitude nulle à ±30°.',
     explanation: 'Le panneau de théorie montre les directions des minima et leur amplitude. La cuve numérique à distance finie est distincte ; ces repères ne sont pas des nœuds mesurés dans le solveur. Des lobes secondaires subsistent au-delà du premier minimum.',
     parameters: { ...base, source: 'plane', obstacle: 'slit', aperture: 0.4, sourceAngle: 0, resolution: 'precision' }, mode: 'discovery',
+  },
+];
+
+const soundBase = { ...SOUND_PARAMETERS, boundary: 'absorbing' as const };
+
+/** Pressure-wave experiments in the same 2D domain; predictions are not measured results. */
+export const SOUND_EXPERIMENTS: Experiment[] = [
+  {
+    id: 'plane', title: '01 · Propagation d’une onde sonore plane', shortTitle: 'Onde plane', category: 'Propagation',
+    objective: 'Suivre des fronts de pression rectilignes et mesurer leur espacement.',
+    prediction: 'À c = 340 m/s et f = 1 000 Hz, deux crêtes voisines devraient être séparées d’environ 34 cm ; T = 1 ms.',
+    explanation: 'La couleur code la perturbation de pression p′ en pascals. La source est une ligne de pression imposée, idéale et bidirectionnelle ; l’onde utile à droite se dirige vers l’obstacle. La directivité d’un haut-parleur réel n’est pas calculée.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'none' }, mode: 'discovery',
+  },
+  {
+    id: 'circular', title: '02 · Propagation sonore circulaire en 2D', shortTitle: 'Onde circulaire 2D', category: 'Propagation',
+    objective: 'Observer la divergence géométrique d’une onde de pression dans le plan du modèle.',
+    prediction: 'Avant les réflexions aux bords, les fronts devraient former des cercles autour de la source et leur amplitude varier avec la distance.',
+    explanation: 'La source ponctuelle du dessin idéalise une source linéique perpendiculaire au plan. Les cercles sont la section d’une propagation cylindrique, pas des sphères sonores calculées en volume. La divergence provient du solveur 2D, sans loi 1/r ajoutée.',
+    parameters: { ...soundBase, source: 'point', sourceX: 0.7, obstacle: 'none' }, mode: 'discovery',
+  },
+  {
+    id: 'narrow', title: '03 · Son à travers une fente étroite', shortTitle: 'Fente étroite', category: 'Diffraction',
+    objective: 'Observer le fort étalement d’une onde sonore transmise pour a < λ.',
+    prediction: 'Avec a = 17 cm et λ = 34 cm, a/λ = 0,5 : les fronts transmis devraient s’étaler fortement.',
+    explanation: 'La paroi rigide réfléchit une partie de la pression incidente ; la perturbation transmise se propage et diffracte aux bords de l’ouverture. Une grande longueur d’onde relativement à l’ouverture favorise cet étalement.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'slit', aperture: 0.17 }, mode: 'discovery',
+  },
+  {
+    id: 'wide', title: '04 · Son à travers une fente large', shortTitle: 'Fente large', category: 'Diffraction',
+    objective: 'Comparer une ouverture de largeur supérieure à λ à la fente étroite.',
+    prediction: 'Avec a = 68 cm et λ = 34 cm, a/λ = 2 : la transmission devrait être plus directionnelle que pour a/λ = 0,5.',
+    explanation: 'Une ouverture large n’annule pas la diffraction : des effets de bord persistent. Comparez les deux expériences après le même temps physique, en distinguant pression instantanée et amplitude estimée.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'slit', aperture: 0.68 }, mode: 'discovery',
+  },
+  {
+    id: 'frequency', title: '05 · Fréquence du son et contournement', shortTitle: 'Fréquence', category: 'Diffraction',
+    objective: 'Modifier la fréquence à célérité et ouverture constantes pour suivre le rapport a/λ.',
+    prediction: 'À c = 340 m/s et a = 34 cm, f = 500, 1 000 et 1 500 Hz donnent a/λ = 0,5, 1 et 1,5.',
+    explanation: 'À célérité constante, diminuer la fréquence allonge λ. Une onde dont la longueur d’onde est grande par rapport aux dimensions pertinentes pénètre plus nettement certaines régions d’ombre. Recommencez après chaque changement et vérifiez les avertissements de résolution ; les bornes dépendent du maillage.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'slit', aperture: 0.34 }, mode: 'analysis',
+  },
+  {
+    id: 'huygens', title: '06 · Huygens pour les ondes sonores', shortTitle: 'Huygens', category: 'Comprendre',
+    objective: 'Interpréter les fronts de pression transmis à l’aide d’ondelettes secondaires illustratives.',
+    prediction: 'Les ondelettes de l’ouverture aident à comprendre qualitativement la construction d’un front diffracté.',
+    explanation: 'Les points et cercles sont une surcouche pédagogique que l’on peut afficher ou masquer. Ils n’injectent aucune seconde onde et leur nombre ne change pas la pression calculée par le solveur.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'slit', aperture: 0.34 }, mode: 'huygens',
+  },
+  {
+    id: 'circle', title: '07 · Son autour d’un cylindre rigide', shortTitle: 'Obstacle circulaire', category: 'Obstacles',
+    objective: 'Observer réflexion et diffraction autour d’une section circulaire.',
+    prediction: 'Pour un diamètre d = 34 cm, d/λ = 1 : la pression devrait se réfléchir en amont et pénétrer partiellement l’ombre en aval.',
+    explanation: 'Le cercle représente la section d’un cylindre invariant perpendiculairement au plan, pas une sphère. Sa paroi est rigide. Son contour est approché par le masque du maillage ; l’effet d’escalier limite la précision près de la surface.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'circle', obstacleWidth: 0.34, obstacleHeight: 0.34 }, mode: 'discovery',
+  },
+  {
+    id: 'rectangle', title: '08 · Son autour d’un obstacle rectangulaire', shortTitle: 'Obstacle rectangulaire', category: 'Obstacles',
+    objective: 'Comparer la réflexion sur une face plane et la diffraction aux coins.',
+    prediction: 'Un obstacle de hauteur h = 51 cm donne h/λ = 1,5 : des fronts devraient contourner ses deux extrémités.',
+    explanation: 'Le rectangle est la section d’un obstacle étendu perpendiculairement au plan. Aucun bloc fini en volume n’est simulé. La largeur, la hauteur et la position changent réellement le masque des cellules solides et donc le champ de pression.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'rectangle', obstacleWidth: 0.25, obstacleHeight: 0.51 }, mode: 'discovery',
+  },
+  {
+    id: 'edge', title: '09 · Diffraction sonore par un bord unique', shortTitle: 'Bord unique', category: 'Obstacles',
+    objective: 'Suivre les fronts de pression qui contournent l’extrémité d’une paroi.',
+    prediction: 'La pression devrait pénétrer partiellement dans l’ombre du bord, avec des fronts courbés près de son extrémité.',
+    explanation: 'Le bord est une demi-paroi rigide dans ce domaine fini. Sa position règle son extrémité. Il ne possède pas deux ouvertures : on n’y applique pas la formule angulaire de la fente unique.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'edge', obstacleY: 0.8 }, mode: 'discovery',
+  },
+  {
+    id: 'double', title: '10 · Interférences sonores par deux fentes', shortTitle: 'Double fente', category: 'Interférences',
+    objective: 'Observer la superposition cohérente des champs transmis par deux ouvertures.',
+    prediction: 'Deux fentes de 17 cm séparées de 51 cm devraient produire des régions d’amplitude élevée et faible après la paroi.',
+    explanation: 'La paroi et ses deux ouvertures agissent sur un seul champ calculé. Les interférences résultent de sa propagation. Une pression momentanément nulle ne prouve pas un minimum d’amplitude durable ; utilisez l’estimation harmonique et les microphones après établissement du signal.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'double', aperture: 0.17, separation: 0.51 }, mode: 'analysis',
+  },
+  {
+    id: 'nodes', title: '11 · Régions de faible amplitude sonore', shortTitle: 'Faibles amplitudes', category: 'Interférences',
+    objective: 'Comparer deux microphones virtuels dans le champ de deux sources cohérentes.',
+    prediction: 'Deux sources de même fréquence et de même phase devraient former des zones d’interférence constructive et destructive.',
+    explanation: 'Les régions sous le seuil sont de faibles amplitudes estimées, pas des zéros exacts ni la preuve d’une absence complète de son. Attendez l’arrivée du signal et une fenêtre de plusieurs périodes. Près d’un minimum, la phase est mal déterminée.',
+    parameters: { ...soundBase, source: 'pair', sourceX: 0.6, sourceSeparation: 0.51, phase: 0, obstacle: 'none' }, mode: 'analysis',
+  },
+  {
+    id: 'comparison', title: '12 · Comparaison de deux ouvertures sonores', shortTitle: 'Deux configurations', category: 'Comparer',
+    objective: 'Comparer deux largeurs de fente avec le même milieu, la même source et le même temps physique.',
+    prediction: 'À λ = 34 cm, une ouverture de 17 cm devrait étaler davantage les fronts qu’une ouverture de 68 cm.',
+    explanation: 'Les configurations repartent ensemble. La comparaison porte sur l’ouverture de la seconde paroi ; les autres paramètres sont communs. Vérifiez les valeurs affichées et confrontez cette prédiction aux champs réellement calculés.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'slit', aperture: 0.17 }, mode: 'comparison',
+  },
+  {
+    id: 'theta', title: '13 · Angle θ : prédiction pour une fente sonore', shortTitle: 'Angle θ et premier minimum', category: 'Diffraction',
+    objective: 'Lire le premier minimum de Fraunhofer tout en le distinguant du champ numérique proche.',
+    prediction: 'À λ = 34 cm et a = 68 cm, le modèle idéal de fente uniformément éclairée prévoit sin θ₁ = 0,5, donc θ₁ = 30°.',
+    explanation: 'Ces directions sont une prédiction analytique en champ lointain, pas des nœuds mesurés dans le domaine fini. La formule suppose une seule fente éclairée par une onde plane en incidence normale ; elle ne s’applique pas au cylindre, au rectangle, au bord ou à une source ponctuelle.',
+    parameters: { ...soundBase, source: 'plane', obstacle: 'slit', aperture: 0.68, sourceAngle: 0, resolution: 'precision' }, mode: 'discovery',
   },
 ];

@@ -1,11 +1,14 @@
 export type SourceKind = 'plane' | 'point' | 'pair';
+export type MediumKind = 'water' | 'sound';
 export type ObstacleKind = 'none' | 'slit' | 'double' | 'circle' | 'rectangle' | 'edge';
 export type Resolution = 'performance' | 'balanced' | 'precision';
-export type DisplayField = 'displacement' | 'amplitude' | 'intensity';
+export type DisplayField = 'displacement' | 'amplitude' | 'intensity' | 'rms';
+export type AcousticView = '2d' | '3d' | 'split';
 export type CameraView = 'free' | 'top' | 'profile' | 'iso';
 export type LabMode = 'discovery' | 'huygens' | 'analysis' | 'comparison' | 'presentation';
 
 export interface Parameters {
+  medium: MediumKind;
   frequency: number; speed: number; amplitude: number; aperture: number;
   source: SourceKind; sourceEnabled: boolean; sourceX: number; sourceY: number;
   sourceSeparation: number; sourceAngle: number; phase: number;
@@ -20,6 +23,8 @@ export interface Grid {
 export interface ProbeReading {
   x: number; y: number; displacement: number; amplitude: number;
   intensity: number; phase: number | null; solid: boolean;
+  /** Actual root mean square over the engine acquisition window, in field SI units. */
+  rms?: number;
 }
 export interface ValidationResult {
   id: string; title: string; objective: string; parameters: string;
@@ -34,10 +39,17 @@ export interface Experiment {
 export interface ProbePosition { x: number; y: number }
 
 export const DEFAULT_PARAMETERS: Parameters = {
+  medium: 'water',
   frequency: 10, speed: 2, amplitude: 0.004, aperture: 0.1,
   source: 'plane', sourceEnabled: true, sourceX: 0.28, sourceY: 0.8,
   sourceSeparation: 0.4, sourceAngle: 0, phase: 0,
   obstacle: 'slit', obstacleX: 1.35, obstacleY: 0.8,
   obstacleWidth: 0.3, obstacleHeight: 0.5, separation: 0.5,
   boundary: 'absorbing', resolution: 'balanced',
+};
+
+/** Pressure perturbation in Pa; the scalar 2D domain remains 2.8 × 1.6 m. */
+export const SOUND_PARAMETERS: Parameters = {
+  ...DEFAULT_PARAMETERS, medium: 'sound', frequency: 1000, speed: 340,
+  amplitude: 1, aperture: 0.17,
 };

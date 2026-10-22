@@ -5,6 +5,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { WaveEngine } from '../physics/WaveEngine';
 import type { CameraView, DisplayField, ProbePosition } from '../types';
 import { angleOverlay, type ThetaMode } from '../physics/thetaOverlay';
+import { getVisualSnapshot } from '../physics/visualSnapshot';
 
 export interface WaveSceneProps {
   engine: WaveEngine;
@@ -24,6 +25,8 @@ export interface WaveSceneProps {
   probes: ProbePosition[];
   onPick: (point: ProbePosition) => void;
   onCanvasReady?: (canvas: HTMLCanvasElement) => void;
+  active?: boolean;
+  fallback?: ReactNode;
   dark: boolean;
 }
 
@@ -37,11 +40,11 @@ const FIELD_COLORS = {
   solid: new THREE.Color('#112638'),
 };
 
-class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+class SceneBoundary extends Component<{ children: ReactNode; fallback?: ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
   render() {
-    if (this.state.failed) return <CanvasFallback />;
+    if (this.state.failed) return this.props.fallback ?? <CanvasFallback />;
     return this.props.children;
   }
 }
@@ -149,6 +152,7 @@ function CameraControls({ view, zoomEnabled }: { view: CameraView; zoomEnabled: 
 }
 
 function FieldSurface({ engine, display, exaggeration, onPick }: Pick<WaveSceneProps, 'engine' | 'display' | 'exaggeration' | 'onPick'>) {
+  const { gl } = useThree();
   const { nx, ny, width, height, dx, dy } = engine.grid;
   const geometry = useMemo(() => {
     const result = new THREE.BufferGeometry();
@@ -182,17 +186,22 @@ function FieldSurface({ engine, display, exaggeration, onPick }: Pick<WaveSceneP
   useEffect(() => () => geometry.dispose(), [geometry]);
   const color = useMemo(() => new THREE.Color(), []);
   useFrame(() => {
+    const visual = getVisualSnapshot(engine);
+    if (engine.parameters.medium === 'sound') gl.domElement.dataset.physicalTime = String(visual.time);
     const positions = geometry.attributes.position as THREE.BufferAttribute;
     const colors = geometry.attributes.color as THREE.BufferAttribute;
     const normals = geometry.attributes.normal as THREE.BufferAttribute;
-    const field = engine.field;
-    const sourceAmplitude = Math.max(engine.parameters.amplitude, 1e-10);
+    const field = visual.field;
+    const sourceAmplitude = Math.max(visual.parameters.amplitude, 1e-10);
+    // Pressure is in Pa, so its visual relief uses a separate normalized scale.
+    // This factor never changes pressure in the solver or at the microphones.
+    const relief = engine.parameters.medium === 'sound' ? exaggeration * 0.004 / sourceAmplitude : exaggeration;
     for (let y = 0; y < ny; y++) {
       for (let x = 0; x < nx; x++) {
         const i = y * nx + x;
-        const solid = engine.mask[i] !== 0;
+        const solid = visual.mask[i] !== 0;
         const eta = solid ? 0 : field[i];
-        positions.setY(i, eta * exaggeration);
+        positions.setY(i, eta * relief);
         if (solid) {
           color.copy(FIELD_COLORS.solid);
         } else if (display === 'displacement') {
@@ -200,8 +209,9 @@ function FieldSurface({ engine, display, exaggeration, onPick }: Pick<WaveSceneP
           color.copy(FIELD_COLORS.zero).lerp(value < 0 ? FIELD_COLORS.low : FIELD_COLORS.high, Math.pow(Math.abs(value), 0.72));
         } else {
           const ratio = display === 'amplitude'
-            ? engine.amplitude[i] / sourceAmplitude
-            : engine.intensity[i];
+            ? visual.amplitude[i] / sourceAmplitude
+            : display === 'rms' ? visual.rms[i] / (sourceAmplitude / Math.SQRT2)
+            : visual.intensity[i];
           const value = clamp(ratio, 0, 1);
           color.copy(FIELD_COLORS.empty).lerp(FIELD_COLORS.zero, Math.min(1, value * 2.25));
           if (value > 0.42) color.lerp(FIELD_COLORS.high, (value - 0.42) / 0.58);
@@ -211,8 +221,8 @@ function FieldSurface({ engine, display, exaggeration, onPick }: Pick<WaveSceneP
         const right = field[y * nx + Math.min(nx - 1, x + 1)];
         const above = field[Math.max(0, y - 1) * nx + x];
         const below = field[Math.min(ny - 1, y + 1) * nx + x];
-        const sx = solid ? 0 : -(right - left) * exaggeration / (2 * dx);
-        const sz = solid ? 0 : -(below - above) * exaggeration / (2 * dy);
+        const sx = solid ? 0 : -(right - left) * relief / (2 * dx);
+        const sz = solid ? 0 : -(below - above) * relief / (2 * dy);
         const length = Math.sqrt(sx * sx + 1 + sz * sz);
         normals.setXYZ(i, sx / length, 1 / length, sz / length);
       }
@@ -358,6 +368,7 @@ function ThetaOverlay({ engine, mode, observationAngle }: { engine: WaveEngine; 
 
 function Tank({ engine, dark }: { engine: WaveEngine; dark: boolean }) {
   const { width, height } = engine.grid;
+  const sound = engine.parameters.medium === 'sound';
   const grid = useMemo(() => {
     const positions: number[] = [];
     const rule: number[] = [];
@@ -375,11 +386,11 @@ function Tank({ engine, dark }: { engine: WaveEngine; dark: boolean }) {
   }, [width, height]);
   useEffect(() => () => { grid.gridGeometry.dispose(); grid.ruleGeometry.dispose(); }, [grid]);
   return <group>
-    <mesh position={[0, -0.095, 0]}>
+    <mesh position={[0, sound ? -0.51 : -0.095, 0]}>
       <boxGeometry args={[width + 0.07, 0.13, height + 0.07]} />
       <meshStandardMaterial color={dark ? '#0a1726' : '#8faab6'} roughness={0.45} metalness={0.5} />
     </mesh>
-    <mesh position={[0, -0.026, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh position={[0, sound ? -0.441 : -0.026, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <planeGeometry args={[width, height]} />
       <meshStandardMaterial color="#09242f" roughness={0.7} />
     </mesh>
@@ -431,16 +442,18 @@ function SourceIndicators({ engine }: { engine: WaveEngine }) {
 }
 
 function ProbeMarkers({ probes, engine }: Pick<WaveSceneProps, 'probes' | 'engine'>) {
+  const sound = engine.parameters.medium === 'sound';
+  const colors = sound ? ['#218dba', '#c65353'] : ['#ffca7c', '#c1b0ff'];
   return <group>{probes.map((probe, index) => <group key={index} position={[probe.x - engine.grid.width / 2, 0.045, probe.y - engine.grid.height / 2]}>
     <mesh rotation={[-Math.PI / 2, 0, 0]}>
       <ringGeometry args={[0.021, 0.028, 32]} />
-      <meshBasicMaterial color={index === 0 ? '#ffca7c' : '#c1b0ff'} side={THREE.DoubleSide} depthTest={false} />
+      <meshBasicMaterial color={colors[index]} side={THREE.DoubleSide} depthTest={false} />
     </mesh>
     <mesh position={[0, 0.04, 0]}>
       <cylinderGeometry args={[0.002, 0.002, 0.08, 6]} />
-      <meshBasicMaterial color={index === 0 ? '#ffca7c' : '#c1b0ff'} depthTest={false} />
+      <meshBasicMaterial color={colors[index]} depthTest={false} />
     </mesh>
-    <Label text={`P${index + 1}`} position={[0, 0.115, 0]} scale={0.07} color={index === 0 ? '#ffca7c' : '#c1b0ff'} />
+    <Label text={`${sound ? 'M' : 'P'}${index + 1}`} position={[0, 0.115, 0]} scale={0.07} color={colors[index]} />
   </group>)}</group>;
 }
 
@@ -486,7 +499,8 @@ function HuygensOverlay({ engine, step, count, exaggeration }: { engine: WaveEng
   }, []);
   useEffect(() => () => { ringGeometry.dispose(); pointGeometry.dispose(); }, [ringGeometry, pointGeometry]);
   useFrame(() => {
-    const { grid: g, parameters: p } = engine;
+    const visual = getVisualSnapshot(engine);
+    const { grid: g, parameters: p } = visual;
     const pointPositions = pointGeometry.attributes.position as THREE.BufferAttribute;
     const pointColors = pointGeometry.attributes.color as THREE.BufferAttribute;
     const ringPositions = ringGeometry.attributes.position as THREE.BufferAttribute;
@@ -495,11 +509,12 @@ function HuygensOverlay({ engine, step, count, exaggeration }: { engine: WaveEng
     let pointVertex = 0;
     samplePoints.forEach((point, pointIndex) => {
       const index = Math.round(point.y / g.dy) * g.nx + Math.round(point.x / g.dx);
-      const phase = engine.phase[index];
-      const strength = Number.isFinite(phase) ? clamp(engine.amplitude[index] / Math.max(p.amplitude, 1e-10), 0, 1.5) : 0.35;
-      const localOscillation = Number.isFinite(phase) ? Math.sin(TAU * p.frequency * engine.time + phase) : 0;
+      const phase = visual.phase[index];
+      const strength = Number.isFinite(phase) ? clamp(visual.amplitude[index] / Math.max(p.amplitude, 1e-10), 0, 1.5) : 0.35;
+      const localOscillation = Number.isFinite(phase) ? Math.sin(TAU * p.frequency * visual.time + phase) : 0;
       const pulse = 0.64 + localOscillation * 0.25;
-      pointPositions.setXYZ(pointVertex, point.x - g.width / 2, engine.field[index] * exaggeration + 0.025, point.y - g.height / 2);
+      const relief = p.medium === 'sound' ? exaggeration * 0.004 / Math.max(p.amplitude, 1e-10) : exaggeration;
+      pointPositions.setXYZ(pointVertex, point.x - g.width / 2, visual.field[index] * relief + 0.025, point.y - g.height / 2);
       pointColors.setXYZ(pointVertex, pulse, pulse * 0.66, pulse * 0.28);
       if (step >= 3) pointVertex++;
       if (step === 2) {
@@ -512,9 +527,9 @@ function HuygensOverlay({ engine, step, count, exaggeration }: { engine: WaveEng
           }
         }
       }
-      if (step < 4 || !engine.measurementReady || !Number.isFinite(phase) || strength < 0.015) return;
+      if (step < 4 || !visual.measurementReady || !Number.isFinite(phase) || strength < 0.015) return;
       // η=A sin(ωt+φ); a crest leaves a secondary point at phase π/2.
-      const cycle = ((p.frequency * engine.time + phase / TAU - 0.25) % 1 + 1) % 1;
+      const cycle = ((p.frequency * visual.time + phase / TAU - 0.25) % 1 + 1) % 1;
       const wavelength = p.speed / p.frequency;
       for (let ring = 0; ring < 3; ring++) {
         const radius = wavelength * (cycle + ring);
@@ -561,30 +576,31 @@ function FieldFeatures({ engine, showNodes, nodeThreshold, showMaxima }: Pick<Wa
   useEffect(() => () => geometries.forEach(geometry => geometry.dispose()), [geometries]);
   const previous = useRef(-Infinity);
   useFrame(({ clock }) => {
-    if (!engine.measurementReady || (!showNodes && !showMaxima)) {
+    const visual = getVisualSnapshot(engine);
+    if (!visual.measurementReady || (!showNodes && !showMaxima)) {
       geometries.forEach(geometry => geometry.setDrawRange(0, 0));
       return;
     }
-    if (clock.elapsedTime - previous.current < 0.16) return;
+    if (engine.parameters.medium !== 'sound' && clock.elapsedTime - previous.current < 0.16) return;
     previous.current = clock.elapsedTime;
-    const { nx, ny, dx, dy, width, height } = engine.grid;
+    const { nx, ny, dx, dy, width, height } = visual.grid;
     const nodes = geometries[0].attributes.position as THREE.BufferAttribute;
     const maxima = geometries[1].attributes.position as THREE.BufferAttribute;
-    const threshold = nodeThreshold * engine.parameters.amplitude;
+    const threshold = nodeThreshold * visual.parameters.amplitude;
     let nodeCount = 0;
     let maximumCount = 0;
     const stride = Math.max(2, Math.ceil(nx / 110));
     for (let y = 4; y < ny - 4; y += stride) {
       for (let x = 4; x < nx - 4; x += stride) {
         const i = y * nx + x;
-        if (engine.mask[i]) continue;
-        const amplitude = engine.amplitude[i];
+        if (visual.mask[i]) continue;
+        const amplitude = visual.amplitude[i];
         if (showNodes && nodeCount < 900 && amplitude <= threshold) {
           nodes.setXYZ(nodeCount++, x * dx - width / 2, 0.016, y * dy - height / 2);
         }
-        if (showMaxima && maximumCount < 120 && amplitude > engine.parameters.amplitude * 0.18
-          && amplitude > engine.amplitude[i - 2] && amplitude >= engine.amplitude[i + 2]
-          && amplitude > engine.amplitude[i - 2 * nx] && amplitude >= engine.amplitude[i + 2 * nx]) {
+        if (showMaxima && maximumCount < 120 && amplitude > visual.parameters.amplitude * 0.18
+          && amplitude > visual.amplitude[i - 2] && amplitude >= visual.amplitude[i + 2]
+          && amplitude > visual.amplitude[i - 2 * nx] && amplitude >= visual.amplitude[i + 2 * nx]) {
           maxima.setXYZ(maximumCount++, x * dx - width / 2, 0.02, y * dy - height / 2);
         }
       }
@@ -618,18 +634,21 @@ function Scene(props: WaveSceneProps) {
     <ProbeMarkers probes={props.probes} engine={props.engine} />
     <FieldFeatures engine={props.engine} showNodes={props.showNodes} nodeThreshold={props.nodeThreshold} showMaxima={props.showMaxima} />
     {props.showTheta && <ThetaOverlay engine={props.engine} mode={props.thetaMode} observationAngle={props.thetaObservationAngle} />}
-    {props.huygens && props.huygensStep > 1 && props.huygensStep < 7 && <HuygensOverlay engine={props.engine} step={props.huygensStep} count={props.secondaryCount} exaggeration={props.exaggeration} />}
+    {props.huygens && props.huygensStep > 1 && props.huygensStep < 7 && (props.engine.parameters.medium !== 'sound' || props.engine.parameters.obstacle === 'slit' || props.engine.parameters.obstacle === 'double') && <HuygensOverlay engine={props.engine} step={props.huygensStep} count={props.secondaryCount} exaggeration={props.exaggeration} />}
   </>;
 }
 
 export function WaveScene(props: WaveSceneProps) {
   const angle = props.showTheta ? angleOverlay(props.engine.parameters, props.engine.grid, props.thetaMode, props.thetaObservationAngle) : null;
   return <div className="wave-scene" style={{ position: 'relative', width: '100%', height: '100%', minHeight: 300, touchAction: props.zoomEnabled ? 'none' : 'pan-y' }}>
-    <SceneBoundary>
+    <SceneBoundary fallback={props.fallback}>
       <Canvas
+        frameloop={props.active === false ? 'never' : 'always'}
         camera={{ position: [2.05, 2.4, 2.5], fov: 38, near: 0.01, far: 30 }}
         dpr={[1, 1.7]}
         gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' }}
+        /* Canvas fallback is an HTML child, mounted even while WebGL works.
+           Keep it static: the outer error boundary mounts the live 2D fallback. */
         fallback={<CanvasFallback />}
         onCreated={({ gl }) => { gl.setClearColor(props.dark ? '#09121f' : '#e1e9ed'); props.onCanvasReady?.(gl.domElement); }}
         style={{ touchAction: props.zoomEnabled ? 'none' : 'pan-y' }}

@@ -1,0 +1,128 @@
+{
+  "environment": "Chromium, Vite development fixture; controls exercised against the exported component",
+  "assertions": {
+    "initialClockAdvances": true,
+    "customFrequencyPreserved": true,
+    "sameEnginePreserved": true,
+    "resumedClockAdvances": true,
+    "inactive2DClean": true,
+    "inactive2DRepeatClean": true,
+    "clock3DAdvances": true,
+    "inactive3DClean": true,
+    "view3DPreserved": true,
+    "unmountedClean": true,
+    "allObserversDisconnectedAtUnmount": true,
+    "noJavaScriptExceptions": true
+  },
+  "snapshots": {
+    "initial2D": {
+      "raf": 2,
+      "observedTargets": 1,
+      "visibilityListeners": 1,
+      "canvases": 1,
+      "physicalTime": 0.003311733031051655,
+      "engineId": "pressure-1",
+      "view": "Vue 2D"
+    },
+    "advanced2D": {
+      "raf": 2,
+      "observedTargets": 1,
+      "visibilityListeners": 1,
+      "canvases": 1,
+      "physicalTime": 0.006226990980921054,
+      "engineId": "pressure-1",
+      "view": "Vue 2D"
+    },
+    "customized2D": {
+      "raf": 2,
+      "observedTargets": 1,
+      "visibilityListeners": 1,
+      "canvases": 1,
+      "physicalTime": 0.001912409215114343,
+      "engineId": "pressure-1",
+      "view": "Vue 2D"
+    },
+    "inactive2D": {
+      "raf": 0,
+      "observedTargets": 0,
+      "visibilityListeners": 0,
+      "canvases": 0,
+      "physicalTime": null,
+      "engineId": null,
+      "view": null
+    },
+    "resumed2D": {
+      "raf": 2,
+      "observedTargets": 1,
+      "visibilityListeners": 1,
+      "canvases": 1,
+      "physicalTime": 0.004477836210999415,
+      "engineId": "pressure-1",
+      "view": "Vue 2D"
+    },
+    "advancedResumed2D": {
+      "raf": 2,
+      "observedTargets": 1,
+      "visibilityListeners": 1,
+      "canvases": 1,
+      "physicalTime": 0.007416416224467769,
+      "engineId": "pressure-1",
+      "view": "Vue 2D"
+    },
+    "inactive2DAgain": {
+      "raf": 0,
+      "observedTargets": 0,
+      "visibilityListeners": 0,
+      "canvases": 0,
+      "physicalTime": null,
+      "engineId": null,
+      "view": null
+    },
+    "running3D": {
+      "raf": 2,
+      "observedTargets": 1,
+      "visibilityListeners": 1,
+      "canvases": 1,
+      "physicalTime": 0.011987540689862988,
+      "engineId": "pressure-1",
+      "view": "Vue 3D"
+    },
+    "advanced3D": {
+      "raf": 2,
+      "observedTargets": 1,
+      "visibilityListeners": 1,
+      "canvases": 1,
+      "physicalTime": 0.013736695459784627,
+      "engineId": "pressure-1",
+      "view": "Vue 3D"
+    },
+    "inactive3D": {
+      "raf": 0,
+      "observedTargets": 0,
+      "visibilityListeners": 0,
+      "canvases": 0,
+      "physicalTime": null,
+      "engineId": null,
+      "view": null
+    },
+    "resumed3D": {
+      "raf": 2,
+      "observedTargets": 1,
+      "visibilityListeners": 1,
+      "canvases": 1,
+      "physicalTime": 0.019077448023945367,
+      "engineId": "pressure-1",
+      "view": "Vue 3D"
+    },
+    "unmounted": {
+      "raf": 0,
+      "observedTargets": 0,
+      "visibilityListeners": 0,
+      "canvases": 0,
+      "physicalTime": null,
+      "engineId": null,
+      "view": null
+    }
+  },
+  "fixtureNote": "One missing favicon.ico request belonged to the temporary fixture; no JavaScript exceptions. The actual production application browser report has no resource or console errors."
+}

@@ -2,17 +2,36 @@ import type { Grid, Parameters, ProbeReading } from '../types';
 
 const WIDTH = 2.8;
 const HEIGHT = 1.6;
-const SAMPLES = 32;
+const SAMPLES = 32; // Exact samples per source period; acoustic statistics use four periods.
 const TAU = 2 * Math.PI;
 const RAD = Math.PI / 180;
 const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
 
-/** Linear 2D scalar wave equation. Physical coordinates and time are in SI units. */
+/** Both coherent acoustic emitters must use their requested physical positions.
+ * Water keeps its historical endpoint-clamping behavior for existing sessions. */
+export function assertSoundPairBounds(parameters: Pick<Parameters, 'medium' | 'source' | 'sourceY' | 'sourceSeparation'>) {
+  if (parameters.medium !== 'sound' || parameters.source !== 'pair') return;
+  const lower = parameters.sourceY - parameters.sourceSeparation / 2;
+  const upper = parameters.sourceY + parameters.sourceSeparation / 2;
+  // Only tolerate floating-point roundoff at an exact domain endpoint.
+  if (lower < -1e-12 || upper > HEIGHT + 1e-12) {
+    throw new RangeError('Deux sources cohérentes : les deux positions doivent rester dans le domaine y = 0 à 1,60 m. Réduisez leur séparation ou déplacez leur centre.');
+  }
+}
+
+/**
+ * Shared linear 2D wave operator in SI coordinates/time.
+ * Water: field = model surface displacement η (m).
+ * Sound: field = acoustic pressure perturbation p′ (Pa), with rigid Neumann faces.
+ * No velocity-vector, volumetric 3D acoustics, density or acoustic intensity is solved.
+ */
 export class WaveEngine {
   parameters: Parameters;
   grid!: Grid;
   field!: Float32Array;
   amplitude!: Float32Array;
+  /** Actual sliding-window root mean square, in m (water) or Pa (sound). */
+  rms!: Float32Array;
   intensity!: Float32Array;
   phase!: Float32Array;
   mask!: Uint8Array;
@@ -24,8 +43,9 @@ export class WaveEngine {
   private next!: Float32Array;
   private damping!: Float32Array;
   private snapshots!: Float32Array;
-  private sumCos!: Float32Array;
-  private sumSin!: Float32Array;
+  private sumCos!: Float32Array | Float64Array;
+  private sumSin!: Float32Array | Float64Array;
+  private sumSquares!: Float64Array;
   private sampleIndex = 0;
   private sampleCount = 0;
   private nextSampleTime = 0;
@@ -40,14 +60,23 @@ export class WaveEngine {
     this.reset();
   }
 
+  /** One period for historical water measurements, four for acoustic statistics. */
+  get measurementWindowPeriods() { return this.parameters.medium === 'sound' ? 4 : 1; }
+  get measurementWindowDuration() { return this.measurementWindowPeriods / this.parameters.frequency; }
+  private get windowSamples() { return SAMPLES * this.measurementWindowPeriods; }
+
   private sanitizeParameters() {
     const p = this.parameters;
+    // Historical water parameter exports predate the explicit medium discriminator.
+    p.medium ??= 'water';
+    if (p.medium !== 'water' && p.medium !== 'sound') throw new RangeError('Milieu inconnu.');
     for (const key of ['frequency', 'speed', 'amplitude', 'aperture', 'sourceX', 'sourceY',
       'sourceSeparation', 'sourceAngle', 'phase', 'obstacleX', 'obstacleY',
       'obstacleWidth', 'obstacleHeight', 'separation'] as const) {
       if (!Number.isFinite(p[key])) throw new RangeError(`Paramètre non fini : ${key}`);
     }
     if (p.frequency <= 0 || p.speed <= 0) throw new RangeError('La fréquence et la célérité doivent être positives.');
+    assertSoundPairBounds(p);
     p.amplitude = Math.max(0, p.amplitude);
     p.aperture = clamp(p.aperture, 0, HEIGHT);
     p.sourceX = clamp(p.sourceX, 0, WIDTH);
@@ -72,13 +101,15 @@ export class WaveEngine {
     this.previous = new Float32Array(size);
     this.next = new Float32Array(size);
     this.amplitude = new Float32Array(size);
+    this.rms = new Float32Array(size);
     this.intensity = new Float32Array(size);
     this.phase = new Float32Array(size);
     this.mask = new Uint8Array(size);
     this.damping = new Float32Array(size);
-    this.snapshots = new Float32Array(size * SAMPLES);
-    this.sumCos = new Float32Array(size);
-    this.sumSin = new Float32Array(size);
+    this.snapshots = new Float32Array(size * this.windowSamples);
+    this.sumCos = this.parameters.medium === 'sound' ? new Float64Array(size) : new Float32Array(size);
+    this.sumSin = this.parameters.medium === 'sound' ? new Float64Array(size) : new Float32Array(size);
+    this.sumSquares = new Float64Array(size);
     this.configureGeometry();
   }
 
@@ -141,10 +172,12 @@ export class WaveEngine {
 
   private clearMeasurement() {
     this.amplitude.fill(0);
+    this.rms.fill(0);
     this.intensity.fill(0);
     this.phase.fill(NaN);
     this.sumCos.fill(0);
     this.sumSin.fill(0);
+    this.sumSquares.fill(0);
     this.snapshots.fill(0);
     this.sampleIndex = 0;
     this.sampleCount = 0;
@@ -152,6 +185,9 @@ export class WaveEngine {
     this.nextSampleTime = this.time + 1 / (this.parameters.frequency * SAMPLES);
     this.measurementReady = false;
   }
+
+  /** Clear only estimators; preserve the field, source phase and physical clock. */
+  resetMeasurements() { this.clearMeasurement(); }
 
   reset() {
     this.time = 0;
@@ -161,12 +197,12 @@ export class WaveEngine {
     this.clearMeasurement();
   }
 
-  /** A resolution change creates a new grid and explicitly restarts physical time. */
+  /** Resolution or medium changes allocate a clean grid and restart physical time. */
   updateParameters(partial: Partial<Parameters>) {
     const old = this.parameters;
     this.parameters = { ...old, ...partial };
     try { this.sanitizeParameters(); } catch (error) { this.parameters = old; throw error; }
-    if (old.resolution !== this.parameters.resolution) {
+    if (old.resolution !== this.parameters.resolution || old.medium !== this.parameters.medium) {
       this.allocate();
       this.reset();
       return;
@@ -230,33 +266,47 @@ export class WaveEngine {
 
   private captureMeasurement(before: Float32Array, after: Float32Array, alpha: number) {
     const size = this.field.length;
-    const slot = this.sampleIndex % SAMPLES;
+    const count = this.windowSamples;
+    const slot = this.sampleIndex % count;
     const offset = slot * size;
     const omega = TAU * this.parameters.frequency;
     const angle = omega * this.nextSampleTime;
     const cosine = Math.cos(angle);
     const sine = Math.sin(angle);
-    // The replaced sample is exactly one period old: its sine/cosine are identical.
+    // The replaced sample is an integer number of periods old: its harmonics agree.
+    const acoustic = this.parameters.medium === 'sound';
     for (let k = 0; k < size; k++) {
-      const value = before[k] + (after[k] - before[k]) * alpha;
-      const difference = value - this.snapshots[offset + k];
+      const interpolated = before[k] + (after[k] - before[k]) * alpha;
+      // Sum precisely the values that enter the Float32 ring; otherwise each later
+      // subtraction leaves a rounding residue in a long acoustic acquisition.
+      // Keep the historical water estimator's arithmetic unchanged.
+      const value = acoustic ? Math.fround(interpolated) : interpolated;
+      const old = this.snapshots[offset + k];
+      const difference = value - old;
       this.snapshots[offset + k] = value;
       this.sumCos[k] += difference * cosine;
       this.sumSin[k] += difference * sine;
+      this.sumSquares[k] += difference * (value + old);
     }
     this.sampleIndex++;
-    this.sampleCount = Math.min(SAMPLES, this.sampleCount + 1);
+    this.sampleCount = Math.min(count, this.sampleCount + 1);
     this.nextSampleTime = this.sampleOrigin + (this.sampleIndex + 1) / (this.parameters.frequency * SAMPLES);
-    this.measurementReady = this.sampleCount === SAMPLES;
+    this.measurementReady = this.sampleCount === count;
     if (!this.measurementReady || this.sampleIndex % 4 !== 0) return;
     const sourceSquared = this.parameters.amplitude ** 2;
     const threshold = Math.max(1e-10, this.parameters.amplitude * 1e-5);
     for (let k = 0; k < size; k++) {
-      const c = this.sumCos[k] * 2 / SAMPLES;
-      const s = this.sumSin[k] * 2 / SAMPLES;
+      const c = this.sumCos[k] * 2 / count;
+      const s = this.sumSin[k] * 2 / count;
       const amplitude = this.mask[k] ? 0 : Math.hypot(c, s);
       this.amplitude[k] = amplitude;
-      this.intensity[k] = sourceSquared > 0 ? amplitude ** 2 / sourceSquared : 0;
+      const meanSquare = this.mask[k] ? 0 : Math.max(0, this.sumSquares[k] / count);
+      this.rms[k] = Math.sqrt(meanSquare);
+      // Historical water proxy is preserved. Acoustic mean-square pressure is only
+      // a dimensionless relative indicator, not an energy flux in W/m².
+      this.intensity[k] = sourceSquared > 0
+        ? this.parameters.medium === 'sound' ? 2 * meanSquare / sourceSquared : amplitude ** 2 / sourceSquared
+        : 0;
       this.phase[k] = amplitude > threshold ? Math.atan2(c, s) : NaN;
     }
   }
@@ -267,12 +317,16 @@ export class WaveEngine {
     const py = clamp(y, 0, height);
     // Nearest fluid grid node: the discretization error is explicit, with no solid blending.
     const k = Math.round(py / dy) * nx + Math.round(px / dx);
-    return { x: px, y: py, displacement: this.field[k], amplitude: this.amplitude[k],
+    return { x: px, y: py, displacement: this.field[k], amplitude: this.amplitude[k], rms: this.rms[k],
       intensity: this.intensity[k], phase: Number.isFinite(this.phase[k]) ? this.phase[k] : null,
       solid: Boolean(this.mask[k]) };
   }
 
-  /** Useful for controlled source-free numerical experiments (SI displacement and velocity). */
+  /**
+   * Source-free initial field and its time derivative.
+   * Water units: m and m/s. Sound units: Pa and Pa/s; the second callback is NOT
+   * particle velocity. This makes pressure-pulse reflection tests unambiguous.
+   */
   setInitialCondition(displacement: (x: number, y: number) => number, velocity: (x: number, y: number) => number = () => 0) {
     this.reset();
     const { nx, ny, dx, dy, dt } = this.grid;

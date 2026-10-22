@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "name": "Option désactivée au départ et absence de faux minimum pour la fente étroite",
+      "passed": true
+    },
+    {
+      "name": "Cas 30° chargé sur la cuve avec son repère théorique",
+      "passed": true
+    },
+    {
+      "name": "La case ajoute effectivement des tracés dans le canvas et peut les retirer",
+      "passed": true
+    },
+    {
+      "name": "Le repère suit la largeur et est masqué en incidence oblique",
+      "passed": true
+    },
+    {
+      "name": "Chaque cuve de comparaison utilise sa propre largeur",
+      "passed": true
+    },
+    {
+      "name": "La source ponctuelle affiche un angle d’observation explicitement distinct du minimum",
+      "passed": true
+    },
+    {
+      "name": "Sans obstacle, l’angle polaire part de la source ponctuelle",
+      "passed": true
+    },
+    {
+      "name": "Activation sur téléphone, sans débordement et avec défilement tactile disponible",
+      "passed": true
+    },
+    {
+      "name": "L’angle de la source ponctuelle est accessible et lisible sur téléphone",
+      "passed": true
+    }
+  ],
+  "errors": []
+}

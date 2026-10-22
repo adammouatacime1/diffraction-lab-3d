@@ -10,6 +10,20 @@ export interface Series {
   points: { x: number; y: number }[];
 }
 
+/** The solver clock is in seconds and microphone samples remain in Pa. */
+export interface MicrophoneSample { t: number; a: number; b: number }
+
+export function AcousticMicrophoneChart({ samples, microphoneCount = 2, height = 190 }: {
+  samples: readonly MicrophoneSample[];
+  microphoneCount?: number;
+  height?: number;
+}) {
+  const series: Series[] = [];
+  if (microphoneCount > 0) series.push({ label: 'M1 · p′₁(t)', color: '#218dba', points: samples.map(sample => ({ x: sample.t * 1000, y: sample.a })) });
+  if (microphoneCount > 1) series.push({ label: 'M2 · p′₂(t)', color: '#c65353', points: samples.map(sample => ({ x: sample.t * 1000, y: sample.b })) });
+  return <LineChart series={series} xLabel="Temps (ms)" yLabel="Pression p′ (Pa)" height={height} emptyMessage="Les pressions des microphones apparaîtront lorsque la simulation aura avancé."/>;
+}
+
 interface LineChartProps {
   series: Series[];
   xLabel: string;
@@ -90,7 +104,7 @@ export function LineChart({
   return (
     <div className="chart-wrap">
       <svg viewBox={`0 0 ${width} ${chartHeight}`} role="img" aria-labelledby={`${id}-title ${id}-desc`} style={{ display: 'block', width: '100%', overflow: 'visible' }}>
-        <title id={`${id}-title`}>{yLabel} en fonction de {xLabel}</title>
+        <title id={`${id}-title`}>{`${yLabel} en fonction de ${xLabel}`}</title>
         <desc id={`${id}-desc`}>{cleanSeries.map((item) => item.label).join(', ')}. Abscisse : {formatNumber(xMin)} à {formatNumber(xMax)}. Ordonnée : {formatNumber(yMin)} à {formatNumber(yMax)}.</desc>
         {ticks(yMin, yMax).map((value) => (
           <g key={`y-${value}`}>
@@ -123,7 +137,7 @@ export function LineChart({
   );
 }
 
-export function FraunhoferChart({ aperture, wavelength }: { aperture: number; wavelength: number }) {
+export function FraunhoferChart({ aperture, wavelength, medium = 'water' }: { aperture: number; wavelength: number; medium?: 'water' | 'sound' }) {
   if (!Number.isFinite(aperture) || !Number.isFinite(wavelength) || aperture <= 0 || wavelength <= 0) {
     return <p className="muted">Une largeur de fente et une longueur d’onde strictement positives sont nécessaires.</p>;
   }
@@ -139,8 +153,9 @@ export function FraunhoferChart({ aperture, wavelength }: { aperture: number; wa
   const points = angles.map((x) => ({ x, y: fraunhoferIntensity(x, aperture, wavelength) }));
   return (
     <div>
-      <LineChart series={[{ label: 'Modèle de Fraunhofer, fente unique', color: '#f4b65c', points }]} xLabel="Angle θ (°)" yLabel="Intensité I / I(0)" height={180} />
-      <p className="science-note">Modèle théorique de fente unique : I/I(0) = [sin β/β]², β = πa sin θ/λ. Cette courbe n’est pas une mesure du calcul FDTD.</p>
+      <LineChart series={[{ label: 'Modèle de Fraunhofer, fente unique', color: '#f4b65c', points }]} xLabel="Angle θ (°)" yLabel={medium === 'sound' ? 'P²(θ) / P²(0)' : 'Intensité I / I(0)'} height={180} />
+      <p className="science-note">Modèle théorique de fente unique : {medium === 'sound' ? 'P²(θ)/P²(0)' : 'I/I(0)'} = [sin β/β]², β = πa sin θ/λ. Cette courbe n’est pas une mesure du calcul FDTD.</p>
+      {medium === 'sound' && <p className="muted">P désigne l’amplitude de pression. Ce rapport de carrés d’amplitudes ne fournit pas une intensité acoustique en W/m² dans le champ diffracté.</p>}
       <p className="muted">Minima idéaux : sin θₘ = mλ/a (m ≠ 0, |mλ/a| ≤ 1). {firstMinima.length ? `Premiers angles : ${firstMinima.map((angle) => `±${formatNumber(angle)}°`).join(' ; ')}${minimumCount > 3 ? '…' : ''}.` : 'Aucun minimum dans le domaine angulaire pour a < λ.'}</p>
       <p className="muted">Domaine lointain requis : D ≫ a²/λ = {formatNumber(aperture ** 2 / wavelength)} m, avec une onde plane en incidence normale et une fente longue. Une coupe proche de l’obstacle ne vérifie pas directement cette loi.</p>
     </div>
@@ -158,7 +173,7 @@ type AngularSample = { ready: false; message: string } | {
 export function sampleAngularIntensity(engine: Pick<WaveEngine, 'parameters' | 'grid' | 'measurementReady' | 'sampleAt'>): AngularSample {
   const p = engine.parameters;
   if (p.obstacle !== 'slit' && p.obstacle !== 'double') return { ready: false, message: 'La mesure angulaire nécessite une fente simple ou double.' };
-  if (!engine.measurementReady) return { ready: false, message: 'Acquisition de l’amplitude harmonique sur une période complète…' };
+  if (!engine.measurementReady) return { ready: false, message: p.medium === 'sound' ? 'Acquisition de l’amplitude harmonique sur quatre périodes complètes…' : 'Acquisition de l’amplitude harmonique sur une période complète…' };
   const sin60 = Math.sin(Math.PI / 3);
   const radius = Math.min(0.65, engine.grid.width - p.obstacleX - 0.25, (p.obstacleY - 0.24) / sin60, (engine.grid.height - p.obstacleY - 0.24) / sin60);
   if (!Number.isFinite(radius) || radius <= Math.max(0.15, 3 * engine.grid.dx)) return { ready: false, message: 'Espace insuffisant en aval pour un arc de mesure hors des bords.' };
@@ -175,11 +190,13 @@ export function sampleAngularIntensity(engine: Pick<WaveEngine, 'parameters' | '
 }
 
 export function AngularMeasurement({ engine }: { engine: WaveEngine }) {
+  const sound = engine.parameters.medium === 'sound';
   const measurement = sampleAngularIntensity(engine);
   if (!measurement.ready) return <p className="muted" role="status">{measurement.message}</p>;
   return <div>
-    <LineChart series={[{ label: 'Mesure FDTD sur un arc en aval', color: '#218dba', points: measurement.points }]} xLabel="Angle depuis l’axe +x (°)" yLabel="A²(θ) / A²(0)" height={180} />
-    <p className="science-note">Données numériques : projection harmonique sur la dernière période, échantillonnée au nœud de grille le plus proche. Arc de rayon r = {formatNumber(measurement.radius)} m, centré sur la barrière. Des transitoires et réflexions peuvent subsister.</p>
+    <LineChart series={[{ label: 'Mesure FDTD sur un arc en aval', color: '#218dba', points: measurement.points }]} xLabel="Angle depuis l’axe +x (°)" yLabel={sound ? 'P²(θ) / P²(0)' : 'A²(θ) / A²(0)'} height={180} />
+    <p className="science-note">Données numériques : projection harmonique sur {sound ? 'les quatre dernières périodes' : 'la dernière période'}, échantillonnée au nœud de grille le plus proche. Arc de rayon r = {formatNumber(measurement.radius)} m, centré sur la barrière. Des transitoires et réflexions peuvent subsister.</p>
+    {sound && <p className="muted micro">Rapport de carrés d’amplitudes de pression, sans conversion en W/m². L’acquisition d’une fenêtre complète ne garantit pas à elle seule un régime stationnaire.</p>}
     <p className="muted">Nombre de Fresnel Fₐ = a²/(λr) = {formatNumber(measurement.fresnel)}. {measurement.fresnel > 0.1 ? 'Champ proche : aucune comparaison quantitative avec Fraunhofer.' : 'Critère de distance indicatif ; les autres hypothèses de Fraunhofer restent nécessaires.'}</p>
     {engine.parameters.obstacle === 'double' && <p className="muted micro">Fₐ utilise la largeur d’une seule fente ; l’étendue complète des deux ouvertures impose aussi une condition de distance.</p>}
     <p className="muted micro">Cette distribution locale ne garantit pas le champ lointain. La référence théorique de fente unique suppose notamment une onde plane en incidence normale.</p>

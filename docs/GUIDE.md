@@ -145,3 +145,17 @@ La courbe analytique de Fraunhofer est affichée séparément et concerne une **
 - **Comparaison différente d’une cuve réelle** : le modèle ne comprend pas la dispersion gravito-capillaire, les effets de profondeur ou les pertes réelles de l’eau.
 
 Pour le détail du calcul et les conditions de validité de Fraunhofer, consultez [MODELE.md](MODELE.md). Les tests et mesures affichés sur la page **Validation scientifique** doivent être lus avec leurs paramètres et leurs limites.
+
+## Le même laboratoire pour les ondes sonores
+
+Le sélecteur de milieu propose désormais **Surface de l’eau** et **Ondes sonores**, indépendamment des cinq onglets pédagogiques. Les manipulations décrites ci-dessus restent celles de l’eau. Chaque milieu garde ses propres paramètres ; passer de l’un à l’autre recommence le champ et les acquisitions, sans convertir une amplitude en millimètres en pression acoustique. Après un changement de milieu, cliquer sur **Démarrer** : le nouveau champ est initialement en pause.
+
+En mode sonore, partez de `f = 1 000 Hz`, `c = 340 m/s`, soit `λ = 34 cm` et `T = 1 ms`. La couleur représente `p′` en Pa. Les vues **2D**, **3D** et **partagée 2D + 3D** lisent le même champ : le relief représente la pression, **pas un déplacement vertical de l’air**. La carte 2D fonctionne en Canvas 2D sans nécessiter WebGL. Lisez le facteur de ralentissement affiché : à 1×, le temps physique nominal progresse 200 fois plus lentement que le temps réel. Les contrôles **Vitesse de lecture pédagogique** et **Amplification du relief** offrent curseur et saisie numérique, sans modifier la physique.
+
+Les six géométries restent disponibles : sans obstacle, fente simple, double fente, cercle, rectangle et bord unique. Le cercle est la section d’un cylindre ; le rectangle est la section d’un obstacle étendu perpendiculairement au plan. Ce ne sont pas des solides finis simulés en volume. Les parois rigides agissent sur le calcul de pression avec une dérivée normale nulle.
+
+Les microphones virtuels **M1 bleu** et **M2 rouge** mesurent la pression dans les zones libres. Leurs courbes partagent une échelle en Pa et un temps en ms. Une pression instantanément nulle ne signifie pas absence de son ; distinguez la pression signée, l’amplitude harmonique estimée et la pression efficace acquise sur quatre périodes, après l’arrivée et l’établissement du signal. Un indicateur relatif d’énergie n’est pas une intensité en W/m². Ne déduisez pas automatiquement un retard par distance/c dans un champ diffracté ou réfléchi.
+
+La bibliothèque sonore propose notamment la fente étroite (`a/λ = 0,5`), la fente large (`a/λ = 2`), l’influence de la fréquence, les obstacles circulaire et rectangulaire, le bord unique, les interférences, Huygens et une comparaison synchronisée. Les ondelettes de Huygens restent une surcouche illustrative, sans injection supplémentaire. Le cas θ = 30° (`a = 68 cm`, `λ = 34 cm`) reste une prédiction de Fraunhofer pour une seule fente idéalement éclairée, distincte du calcul numérique fini.
+
+Le guide sonore complet, les limites du modèle, les unités et les conditions d’interprétation des microphones se trouvent dans [SON.md](SON.md).

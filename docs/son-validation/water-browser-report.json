@@ -1,0 +1,94 @@
+{
+  "baseURL": "http://127.0.0.1:4180",
+  "browser": {
+    "name": "Chromium",
+    "version": "154.0.8037.57"
+  },
+  "testedAt": "2026-10-22T16:28:51.495Z",
+  "checks": [
+    {
+      "name": "Rendu WebGL et progression du champ",
+      "passed": true,
+      "detail": "canvas 1078 × 468, t=1.721 s"
+    },
+    {
+      "name": "Pause stable puis pas manuel effectif",
+      "passed": true,
+      "detail": "1.82 → 1.824 s"
+    },
+    {
+      "name": "Curseur fréquence et réciprocité longueur d’onde",
+      "passed": true,
+      "detail": "f=12,5 Hz → λ=0,160 m ; λ=0,25 m → f=8 Hz"
+    },
+    {
+      "name": "Sources et géométries réactives",
+      "passed": true
+    },
+    {
+      "name": "Parcours Huygens jusqu’au champ seul",
+      "passed": true
+    },
+    {
+      "name": "Sondes sur la cuve et courbe issue du calcul",
+      "passed": true,
+      "detail": "2 sondes, 2 séries temporelles calculées"
+    },
+    {
+      "name": "Pas manuel enregistré dans le graphe de sonde",
+      "passed": true
+    },
+    {
+      "name": "Coordonnées de sonde validées au blur et historique réinitialisé",
+      "passed": true
+    },
+    {
+      "name": "Acquisition angulaire réelle et détection d’arrivée après reset",
+      "passed": true,
+      "detail": "Profil mesuré après acquisition ; arrivée au seuil de 5 % affichée"
+    },
+    {
+      "name": "Effacement des sondes sans série artificielle",
+      "passed": true
+    },
+    {
+      "name": "Deux cuves et horloges synchronisées",
+      "passed": true,
+      "detail": "t₁=0.313 s ; t₂=0.313 s"
+    },
+    {
+      "name": "Présentation avec équations, annotations et réglages réversibles",
+      "passed": true
+    },
+    {
+      "name": "Thème sombre",
+      "passed": true
+    },
+    {
+      "name": "Export PNG et JSON",
+      "passed": true,
+      "detail": "diffraction-lab-water-experience.png et diffraction-lab-water-parametres.json"
+    },
+    {
+      "name": "Import des paramètres exportés",
+      "passed": true
+    },
+    {
+      "name": "Validations scientifiques exécutées dans le navigateur",
+      "passed": true,
+      "detail": "7 / 7 vérifications satisfaites · résultats calculés à l’instant"
+    },
+    {
+      "name": "Affichage mobile sans débordement horizontal",
+      "passed": true,
+      "detail": "390 / 390px"
+    },
+    {
+      "name": "Aucune erreur console ou JavaScript",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

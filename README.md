@@ -85,3 +85,17 @@ Le dossier `dist`, produit par `npm run build`, peut être publié chez un hébe
 ## Mettre le laboratoire en ligne
 
 Pour obtenir une adresse partageable avec le professeur, suivez le [guide de mise en ligne](docs/MISE-EN-LIGNE.md). Une [archive du site déjà compilé](https://raw.githubusercontent.com/adammouatacime1/diffraction-lab-3d/livraison-diffraction-lab-3d/docs/site/diffraction-lab-website.zip) permet de publier le laboratoire avec Netlify Drop, sans installer Node.js sur votre ordinateur.
+
+## Deux milieux dans un seul laboratoire
+
+Le sélecteur **Surface de l’eau / Ondes sonores** ajoute l’acoustique au laboratoire existant. Les paramètres restent indépendants et le champ repart à zéro lors d’un changement de milieu ; cliquer ensuite sur **Démarrer** pour quitter la pause. Le mode eau conserve ses onze expériences ; la bibliothèque sonore en propose treize, avec propagation plane/circulaire 2D, fentes étroite et large, fréquence, Huygens, cylindre, rectangle, bord, interférences, comparaison et angle θ.
+
+En son, `f = 1 000 Hz` et `c = 340 m/s` donnent `λ = 34 cm` et `T = 1 ms`. Les vues **2D**, **3D** et **partagée 2D + 3D** lisent le même champ de pression. La carte 2D utilise Canvas 2D, y compris sans WebGL. **Le relief représente la pression acoustique ; ce n’est pas un déplacement vertical de l’air.** Le calcul est bidimensionnel, sans propagation volumique complète.
+
+Les microphones M1 bleu et M2 rouge lisent la pression en Pa ; leur graphique commun utilise des millisecondes. La pression efficace est mesurée sur quatre périodes et reste distincte de la pression instantanée et de l’amplitude harmonique estimée. Les parois sont rigides, les bords absorbants restent une couche dissipative progressive et Huygens une surcouche pédagogique.
+
+Le [guide sonore](docs/SON.md) détaille les manipulations, les unités et les limites. L’[audit acoustique du solveur](docs/ACOUSTIC-ENGINE-AUDIT.md) précise les conditions aux limites et les validations. Le [bilan des vérifications](docs/VALIDATION-SON.md) fournit les résultats effectivement obtenus et les captures ordinateur/mobile. Les anciens exports de paramètres du mode eau restent importables par migration explicite ; le nouveau format identifie le milieu et les unités.
+
+Le code source sonore est sur **`ajout-ondes-sonores`** ; le site public est servi depuis **`gh-pages`**, à la même adresse. Le fichier `deployment.json` de cette branche de publication identifie le commit source et les empreintes des fichiers compilés. Pousser le code source ne publie pas automatiquement la construction : publier les fichiers validés de `dist` dans `gh-pages`. Les vidéos et l’archive compilée historiques liées plus haut, sur `livraison-diffraction-lab-3d`, concernent le mode eau.
+
+Pour une intégration dans le futur site commun, `src/App.tsx` expose `DiffractionLaboratory` comme export nommé et par défaut. Le site hôte peut le démonter ou utiliser `active={false}` pour retirer ses scènes et arrêter son calcul.

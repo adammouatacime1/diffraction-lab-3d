@@ -5,6 +5,7 @@ export function HelpContent() {
       <h2>Comment fonctionne la simulation ?</h2>
       <p>La cuve représente une surface en deux dimensions. Chaque point porte une élongation verticale η, calculée à partir de ses voisins. La vue en relief affiche ces mêmes valeurs : elle ne fabrique pas une autre animation.</p>
       <p>Sur ordinateur, la colonne des expériences et des paramètres défile séparément. La molette au-dessus de la cuve fait défiler la page ; le bouton de loupe permet d’activer le zoom, puis de le désactiver. Sur téléphone, le glissement vertical reste disponible tant que le zoom est désactivé.</p>
+      <p>Le sélecteur de milieu distingue <strong>Surface de l’eau</strong> et <strong>Ondes sonores</strong>. Les sections 1 à 8 décrivent les lectures du mode eau ; la section 9 précise le modèle acoustique, ses unités et ses représentations. Chaque milieu conserve ses paramètres ; changer de milieu recommence le champ et les mesures.</p>
 
       <section className="card">
         <h3>1. Une onde mécanique simplifiée</h3>
@@ -83,6 +84,21 @@ export function HelpContent() {
           <li><strong>3–4 min :</strong> double fente ou deux sources. Comparer l’élongation et l’amplitude après établissement du régime.</li>
           <li><strong>4–5 min :</strong> lire une sonde et les résultats de validation. Expliquer une limite du modèle avant d’exporter une capture.</li>
         </ol>
+      </section>
+
+      <section className="card">
+        <h3>9. Les ondes sonores dans le même laboratoire</h3>
+        <p>Le champ sonore est la perturbation de pression <strong>p′(x,y,t)</strong> dans un milieu homogène, linéaire et non dispersif. Les valeurs positives et négatives sont des surpressions et dépressions autour de la pression de repos. Avec c = 340 m/s et f = 1 000 Hz, λ = 34 cm et T = 1 ms. L’amplitude de source se mesure en Pa, pas en mm.</p>
+        <p className="equation">∂²p′/∂t² = c² (∂²p′/∂x² + ∂²p′/∂y²)</p>
+        <p>Une paroi rigide impose une vitesse normale nulle ; dans cette formulation en pression, cela correspond à ∂p′/∂n = 0. Les six géométries modifient réellement le masque du solveur : sans obstacle, fente simple, double fente, cercle, rectangle et bord unique. Le cercle est la section d’un cylindre ; le rectangle celle d’un obstacle étendu perpendiculairement au plan. Aucune sphère ni aucun bloc fini n’est calculé en volume.</p>
+        <p>La source plane est une ligne de pression imposée, qui émet des deux côtés. La source ponctuelle du plan est une idéalisation linéique perpendiculaire au plan ; ses fronts circulaires ne représentent pas une propagation sphérique 3D complète. Deux sources cohérentes permettent de régler séparation et déphasage. Un symbole de haut-parleur représente la source ; sa directivité réelle n’est pas entièrement simulée.</p>
+        <p>Les commandes <strong>Vue 2D</strong>, <strong>Vue 3D</strong> et <strong>Vue partagée 2D + 3D</strong> montrent le même champ et le même temps physique. La vue 2D est une vraie carte plane en Canvas 2D, disponible sans WebGL. <strong>Le relief représente la pression acoustique ; ce n’est pas un déplacement vertical de l’air.</strong> Le modèle reste bidimensionnel. Le grossissement et la vitesse de lecture ne changent pas c, f ou l’amplitude physique ; le facteur de ralentissement pédagogique est affiché.</p>
+        <p>Les microphones virtuels <strong>M1 bleu</strong> et <strong>M2 rouge</strong> se placent dans les zones libres, par déplacement ou par leurs coordonnées. Leurs courbes p′₁(t) et p′₂(t) partagent une échelle en Pa et un temps en ms. Déplacer un microphone ou recommencer l’expérience efface les anciennes acquisitions.</p>
+        <p>La pression instantanée signée, l’amplitude harmonique estimée et la pression efficace sont trois lectures distinctes. Une pression instantanément nulle peut simplement être un passage par l’équilibre. En son, la pression efficace est mesurée sur une fenêtre de <strong>quatre périodes</strong> ; attendre aussi l’arrivée du signal et son établissement. Une fenêtre complète pendant un transitoire ne garantit pas un régime établi.</p>
+        <p>Un indicateur relatif d’énergie n’est pas une intensité en W/m². La relation p<sub>rms</sub>²/(ρc) suppose une onde progressive appropriée ; elle ne s’applique pas automatiquement au champ proche, aux ondes stationnaires et aux interférences. Aucune loi artificielle 1/r n’est ajoutée à la divergence du solveur 2D. Un déphasage devient peu fiable près d’un minimum et peut être ambigu modulo une période ; dans un champ diffracté ou réfléchi, un retard n’est pas systématiquement la distance directe divisée par c.</p>
+        <p>Les longueurs d’onde grandes relativement à un obstacle ou une ouverture peuvent rendre le contournement ou l’étalement plus net. Comparez les expériences à célérité fixée en modifiant la fréquence et en surveillant la résolution. Visez au moins 12 cellules par longueur d’onde et 6 dans une ouverture. La stabilité CFL ne garantit pas à elle seule la précision. Les bords absorbants restent une couche dissipative progressive, pas une PML.</p>
+        <p>Les ondelettes de <strong>Huygens</strong> restent illustratives : les afficher ou changer leur densité ne crée aucune onde supplémentaire dans le calcul. Le panneau <strong>θ</strong> conserve la séparation entre Fraunhofer et la mesure numérique. Dans le cas sonore a = 68 cm, λ = 34 cm, le premier minimum idéal vaut 30°. La formule suppose une seule fente uniformément éclairée par une onde plane en incidence normale et en champ lointain ; elle ne décrit pas tous les obstacles ni toutes les sources.</p>
+        <p>Les exports identifient le milieu, les unités et la version du format. Les anciens fichiers de version 1 restent des expériences du mode eau lors de leur migration ; l’import recommence le champ. Le guide sonore du dépôt détaille les manipulations et les limites.</p>
       </section>
     </article>
   );
