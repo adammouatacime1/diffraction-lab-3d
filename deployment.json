@@ -1,11 +1,18 @@
 {
   "application": "Diffraction Lab 3D",
-  "source_commit": "db725076835a54065b8a59cf7c2b8375f4856e49",
+  "source_repository": "adammouatacime1/diffraction-lab-3d",
+  "source_branch": "ajout-ondes-sonores",
+  "source_commit": "102f00fd27f48503b70447a0a1fccb36759142ee",
+  "media": [
+    "water",
+    "sound"
+  ],
   "site_url": "https://adammouatacime1.github.io/diffraction-lab-3d/",
+  "validation_report": "https://github.com/adammouatacime1/diffraction-lab-3d/blob/102f00fd27f48503b70447a0a1fccb36759142ee/docs/VALIDATION-SON.md",
   "files_sha256": {
-    "assets/index-8NTO5uKt.css": "b8a1f181d0ad10c142fc64deeabf01ff97c1b27ca29e5676c280eadde503d60b",
-    "assets/index-C0tStjgx.js": "a33cfb36c2ede961500f6f4ccf211a5062939e0d0c5e6c26892960cafd727c30",
+    "assets/index-hPwxK0hx.js": "0a17a77701911d877b87f2e5872e8a0accce13008ccff8a91e2ebb04d732424e",
+    "assets/index-y6dUKlxp.css": "01394951cd05c11db89eb3173b3235000f0462a8537a0ab0864bdb4533dc1a4c",
     "favicon.svg": "6f5b59a81ed8250a44cebd974b090a937641a8de062b8ba93f831aceb2fb47a7",
-    "index.html": "0d7503a4129abea2d06039a54ee7552d5e6e7b34f2fed3c10dab01025d003d73"
+    "index.html": "53cd8191acfd3f42e0d729fbbb1291613786da93a42b61fee158b32dd6ae626f"
   }
 }
