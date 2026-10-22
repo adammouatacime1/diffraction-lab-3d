@@ -4,6 +4,10 @@ Ouvrir le [laboratoire en mode sonore](https://adammouatacime1.github.io/diffrac
 
 **GBF → câble électrique → haut-parleur → onde incidente → fente → onde diffractée.**
 
+Le montage s’ouvre désormais en **3D avec θ affiché**, réglable avec **Angle θ du montage**. Les boutons **Isométrique**, **Dessus** et **3D libre** changent la caméra. θ indique ici une direction d’observation après la fente ; le bouton **Cas θ₁ = 30° (théorie)** charge séparément un cas approprié au premier minimum idéal. Voir le [guide 3D et θ](GBF-3D.md).
+
+Pour ouvrir la représentation plane sans créer de contexte WebGL, utiliser le [lien 2D](https://adammouatacime1.github.io/diffraction-lab-3d/?medium=sound&view=2d).
+
 Le GBF commande le haut-parleur avec un signal sinusoïdal. Le haut-parleur représente la source du son ; le GBF lui-même n’émet pas directement l’onde acoustique.
 
 ## Observer

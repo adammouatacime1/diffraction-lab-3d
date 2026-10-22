@@ -49,6 +49,8 @@ async function pause(page) {
 async function fullLab(page) {
   const tools = page.getByRole('button', { name: 'Outils et autres expériences', exact: true });
   if (await tools.isVisible()) await tools.click();
+  const planar = page.getByRole('button', { name: 'Vue 2D', exact: true });
+  if (await planar.isVisible()) await planar.click();
 }
 async function play(page) {
   const button = page.getByRole('button', { name: 'Démarrer', exact: true });
@@ -426,7 +428,7 @@ try {
   await check('Affichage ordinateur/mobile clair/sombre et comparaison partagée sans débordement', async () => {
     for (const viewport of [{ width: 1440, height: 1050 }, { width: 390, height: 844 }]) {
       const visual = await context.newPage(); monitor(visual, `${viewport.width}`);
-      await visual.setViewportSize(viewport); await visual.goto(`${baseURL}/?medium=sound`, { waitUntil: 'networkidle' }); await fullLab(visual);
+      await visual.setViewportSize(viewport); await visual.goto(`${baseURL}/?medium=sound&view=2d`, { waitUntil: 'networkidle' }); await fullLab(visual);
       await play(visual); await until(async () => number(await clock(visual).innerText()) >= 9); await pause(visual);
       for (const theme of ['light', 'dark']) {
         if (theme === 'dark') await visual.getByRole('button', { name: 'Activer le mode sombre', exact: true }).click();
@@ -481,7 +483,7 @@ try {
       };
     });
     const fallback = await noGL.newPage(); monitor(fallback, 'sans-webgl');
-    await fallback.goto(`${baseURL}/?medium=sound`, { waitUntil: 'networkidle' });
+    await fallback.goto(`${baseURL}/?medium=sound&view=2d`, { waitUntil: 'networkidle' });
     await acousticCanvas(fallback).waitFor({ state: 'visible' });
     assert.equal(await medium(fallback).inputValue(), 'sound');
     assert.equal(await fallback.evaluate(() => window.__webglAttempts), 0, 'La vue 2D doit fonctionner sans créer de contexte WebGL');

@@ -1,0 +1,128 @@
+{
+  "baseURL": "http://127.0.0.1:4180",
+  "soundURL": "http://127.0.0.1:4180/?medium=sound",
+  "testedAt": "2026-10-22T18:07:35.785Z",
+  "browser": "154.0.8037.57",
+  "checks": [
+    {
+      "name": "Le montage sonore ouvre directement une véritable scène 3D avec θ",
+      "passed": true,
+      "detail": "WebGL 1306 × 598, θ = 30° à l’ouverture"
+    },
+    {
+      "name": "Les fronts 3D évoluent réellement derrière la fente",
+      "passed": true,
+      "detail": "5876 pixels modifiés en aval, t = 14.996 ms"
+    },
+    {
+      "name": "Changer θ modifie le repère dessiné sans changer le champ ni le temps",
+      "passed": true,
+      "detail": "θ modifié dans les deux sens ; temps et moteur conservés"
+    },
+    {
+      "name": "Le bouton θ masque et réaffiche effectivement les traits dans le canvas",
+      "passed": true
+    },
+    {
+      "name": "Les caméras et la rotation à la souris conservent le même temps physique",
+      "passed": true
+    },
+    {
+      "name": "La vue 2D et le retour 3D partagent le moteur, le temps et le bon export PNG",
+      "passed": true,
+      "detail": "Même moteur pressure-1 ; exports issus des canvas affichés (0 / 0 pixels différents)"
+    },
+    {
+      "name": "Le θ du haut-parleur localisé est explicitement une direction d’observation",
+      "passed": true
+    },
+    {
+      "name": "Le cas θ₁ = 30° charge séparément les premiers minima idéaux de Fraunhofer",
+      "passed": true,
+      "detail": "Source plane et a/λ = 2 pour le minimum ; retour au haut-parleur localisé avec angle d’observation"
+    },
+    {
+      "name": "Montage 3D avec θ visible sur mobile, thème clair",
+      "passed": true,
+      "detail": "Geste tactile réel en 3D libre : image modifiée, temps physique conservé ; retour Isométrique rétablit pan-y"
+    },
+    {
+      "name": "Montage 3D avec θ visible sur mobile, thème sombre",
+      "passed": true,
+      "detail": "Geste tactile réel en 3D libre : image modifiée, temps physique conservé ; retour Isométrique rétablit pan-y"
+    },
+    {
+      "name": "Sans WebGL, le montage et θ restent utilisables en Canvas 2D",
+      "passed": true,
+      "detail": "Repli 2D après demande 3D ; URL 2D explicite sans tentative WebGL"
+    },
+    {
+      "name": "Aucune erreur JavaScript, console ou ressource manquante",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "captures": [
+    {
+      "filename": "gbf-theta3d-desktop-light.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1080
+      },
+      "theme": "light",
+      "physicalTime": "0.014996086894128208",
+      "documentWidth": 1440
+    },
+    {
+      "filename": "gbf-theta3d-desktop-top.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1080
+      },
+      "theme": "light",
+      "physicalTime": "0.014996086894128208",
+      "documentWidth": 1440
+    },
+    {
+      "filename": "gbf-theta3d-theoretical-minimum.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1080
+      },
+      "theme": "light",
+      "physicalTime": "0.0007487012977269335",
+      "documentWidth": 1440
+    },
+    {
+      "filename": "gbf-theta3d-mobile-light.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "physicalTime": "0.012733846725029554",
+      "documentWidth": 390
+    },
+    {
+      "filename": "gbf-theta3d-mobile-dark.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "physicalTime": "0.012733846725029554",
+      "documentWidth": 390
+    },
+    {
+      "filename": "gbf-theta3d-no-webgl.png",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "theme": "light",
+      "physicalTime": "0.010821437509915228",
+      "documentWidth": 1280
+    }
+  ],
+  "errors": []
+}

@@ -1,6 +1,6 @@
 # Diffraction des ondes sonores
 
-Le laboratoire propose deux milieux dans la même application : **Surface de l’eau** et **Ondes sonores**. Le mode sonore s’ouvre sur le [montage GBF → haut-parleur → fente](GBF.md), animé et centré sur l’observation des ondes incidentes et diffractées. La fréquence et la largeur de fente se règlent directement sous la vue. **Outils et autres expériences** retrouve le laboratoire complet décrit ci-dessous.
+Le laboratoire propose deux milieux dans la même application : **Surface de l’eau** et **Ondes sonores**. Le mode sonore s’ouvre sur le [montage GBF → haut-parleur → fente en 3D avec θ](GBF-3D.md), animé et centré sur l’observation des ondes incidentes et diffractées. La fréquence et la largeur de fente se règlent directement sous la vue ; l’angle d’observation θ et la caméra se règlent au-dessus. **Outils et autres expériences** retrouve le laboratoire complet décrit ci-dessous.
 
 Le sélecteur de milieu est distinct des onglets Découverte, Huygens, Analyse, Comparaison et Présentation. Les paramètres des deux milieux sont conservés séparément ; chaque changement de milieu recommence le champ et les mesures afin de ne pas mélanger élongations et pressions. Le montage sonore démarre automatiquement. Les autres configurations restent **en pause** après le changement de milieu : cliquer sur **Démarrer** pour commencer la nouvelle acquisition.
 

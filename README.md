@@ -88,7 +88,7 @@ Pour obtenir une adresse partageable avec le professeur, suivez le [guide de mis
 
 ## Deux milieux dans un seul laboratoire
 
-Le sélecteur **Surface de l’eau / Ondes sonores** ajoute l’acoustique au laboratoire existant. Le mode sonore s’ouvre directement sur un **montage GBF → haut-parleur → fente** animé, pour voir les ondes émises traverser l’ouverture puis se diffracter. Les réglages visibles sont la fréquence et la largeur de fente. **Outils et autres expériences** retrouve les cartes de pression, les vues 3D, les microphones et la bibliothèque complète. Le [guide du montage GBF](docs/GBF.md) décrit cette vue d’observation.
+Le sélecteur **Surface de l’eau / Ondes sonores** ajoute l’acoustique au laboratoire existant. Le mode sonore s’ouvre directement sur un **montage GBF → haut-parleur → fente en 3D, avec θ visible**, pour voir les ondes émises traverser l’ouverture puis se diffracter. La fréquence, la largeur de fente et la direction θ sont réglables. Les vues isométrique, dessus et libre permettent d’examiner le montage. **Outils et autres expériences** retrouve les cartes de pression, les microphones et la bibliothèque complète. Le [guide 3D et θ](docs/GBF-3D.md) décrit les commandes et distingue l’angle d’observation du premier minimum théorique.
 
 Les paramètres restent indépendants et le champ repart à zéro lors d’un changement de milieu. Le montage sonore démarre automatiquement ; les autres configurations restent en pause jusqu’à **Démarrer**. Le mode eau conserve ses onze expériences ; la bibliothèque sonore en propose quatorze, avec le montage GBF, propagation plane/circulaire 2D, fentes étroite et large, fréquence, Huygens, cylindre, rectangle, bord, interférences, comparaison et angle θ.
 

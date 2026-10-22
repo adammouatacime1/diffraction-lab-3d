@@ -4,7 +4,7 @@ import path from 'node:path';
 import { chromium } from 'playwright-core';
 
 const baseURL = process.env.BASE_URL || 'http://127.0.0.1:4180';
-const soundURL = new URL('?medium=sound', baseURL.endsWith('/') ? baseURL : `${baseURL}/`).href;
+const soundURL = new URL('?medium=sound&view=2d', baseURL.endsWith('/') ? baseURL : `${baseURL}/`).href;
 const output = path.resolve('test-results/gbf');
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -82,7 +82,7 @@ try {
   });
   await check('Les fronts transmis derrière la fente proviennent d’un champ évolutif', async () => {
     await pause(page); await page.getByRole('button', { name: 'Recommencer l’expérience', exact: true }).click();
-    await page.waitForTimeout(180);
+    await page.waitForFunction(() => Number(document.querySelector('canvas.planar-wave-canvas')?.dataset.physicalTime) === 0, undefined, { timeout: 5000 });
     const empty = await frame(page); assert.equal(empty.time, 0);
     await play(page); await waitTime(page, 0.014); await pause(page);
     const wave = await frame(page);

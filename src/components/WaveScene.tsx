@@ -28,6 +28,8 @@ export interface WaveSceneProps {
   active?: boolean;
   fallback?: ReactNode;
   dark: boolean;
+  /** Readable GBF apparatus view of this same two-dimensional pressure field. */
+  illustration?: boolean;
 }
 
 const TAU = Math.PI * 2;
@@ -38,6 +40,8 @@ const FIELD_COLORS = {
   high: new THREE.Color('#f6a97e'),
   empty: new THREE.Color('#102342'),
   solid: new THREE.Color('#112638'),
+  quietLight: new THREE.Color('#eaf3f6'),
+  quietDark: new THREE.Color('#234354'),
 };
 
 class SceneBoundary extends Component<{ children: ReactNode; fallback?: ReactNode }, { failed: boolean }> {
@@ -151,7 +155,7 @@ function CameraControls({ view, zoomEnabled }: { view: CameraView; zoomEnabled: 
   return null;
 }
 
-function FieldSurface({ engine, display, exaggeration, onPick }: Pick<WaveSceneProps, 'engine' | 'display' | 'exaggeration' | 'onPick'>) {
+function FieldSurface({ engine, display, exaggeration, onPick, illustration, dark }: Pick<WaveSceneProps, 'engine' | 'display' | 'exaggeration' | 'onPick' | 'illustration' | 'dark'>) {
   const { gl } = useThree();
   const { nx, ny, width, height, dx, dy } = engine.grid;
   const geometry = useMemo(() => {
@@ -205,8 +209,12 @@ function FieldSurface({ engine, display, exaggeration, onPick }: Pick<WaveSceneP
         if (solid) {
           color.copy(FIELD_COLORS.solid);
         } else if (display === 'displacement') {
-          const value = clamp(eta / sourceAmplitude, -1, 1);
-          color.copy(FIELD_COLORS.zero).lerp(value < 0 ? FIELD_COLORS.low : FIELD_COLORS.high, Math.pow(Math.abs(value), 0.72));
+          // The focused apparatus uses stronger visual contrast so the weak
+          // transmitted pressure remains readable. No solver sample or height
+          // is multiplied by this color-only gain; the advanced Pa map is unchanged.
+          const value = clamp(eta / sourceAmplitude * (illustration ? 8 : 1), -1, 1);
+          color.copy(illustration ? dark ? FIELD_COLORS.quietDark : FIELD_COLORS.quietLight : FIELD_COLORS.zero)
+            .lerp(value < 0 ? FIELD_COLORS.low : FIELD_COLORS.high, Math.pow(Math.abs(value), 0.72) * (illustration ? 0.65 : 1));
         } else {
           const ratio = display === 'amplitude'
             ? visual.amplitude[i] / sourceAmplitude
@@ -237,6 +245,61 @@ function FieldSurface({ engine, display, exaggeration, onPick }: Pick<WaveSceneP
   return <mesh geometry={geometry} onClick={handlePick}>
     <meshStandardMaterial vertexColors roughness={0.36} metalness={0.16} side={THREE.DoubleSide} />
   </mesh>;
+}
+
+/** Instantaneous p′=0 contours of the actual field, never secondary sound sources.
+ * Their small lift is only to keep the phase marks legible over the pressure mesh. */
+function AcousticPhaseFronts({ engine, dark }: Pick<WaveSceneProps, 'engine' | 'dark'>) {
+  const { gl } = useThree();
+  const { nx, ny, dx, dy, width, height } = engine.grid;
+  const geometry = useMemo(() => {
+    const result = new THREE.BufferGeometry();
+    // At most two independent segments (four vertices) per marching cell.
+    result.setAttribute('position', new THREE.BufferAttribute(new Float32Array((nx - 1) * (ny - 1) * 12), 3).setUsage(THREE.DynamicDrawUsage));
+    result.setDrawRange(0, 0);
+    return result;
+  }, [nx, ny]);
+  const crossing = useMemo(() => new Float64Array(8), []);
+  const last = useRef<{ time: number; geometry: THREE.BufferGeometry; amplitude: number } | null>(null);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  useEffect(() => () => {
+    delete gl.domElement.dataset.phaseFrontTime;
+    delete gl.domElement.dataset.phaseFrontSegments;
+  }, [gl]);
+  useFrame(() => {
+    const visual = getVisualSnapshot(engine);
+    const amplitude = Math.max(visual.parameters.amplitude, 1e-10);
+    if (last.current?.time === visual.time && last.current.geometry === geometry && last.current.amplitude === amplitude) return;
+    last.current = { time: visual.time, geometry, amplitude };
+    const attribute = geometry.attributes.position as THREE.BufferAttribute;
+    const positions = attribute.array as Float32Array;
+    let cursor = 0;
+    for (let y = 0; y < ny - 1; y++) for (let x = 0; x < nx - 1; x++) {
+      const k = y * nx + x;
+      if (visual.mask[k] || visual.mask[k + 1] || visual.mask[k + nx] || visual.mask[k + nx + 1]) continue;
+      const a = visual.field[k], b = visual.field[k + 1], c = visual.field[k + nx + 1], d = visual.field[k + nx];
+      // Use only current pressure for visibility. Stopping the GBF clears the
+      // estimators, but must not erase already emitted fronts from this drawing.
+      if (Math.max(Math.abs(a), Math.abs(b), Math.abs(c), Math.abs(d)) < amplitude * 0.001) continue;
+      const left = x * dx - width / 2, top = y * dy - height / 2;
+      let count = 0;
+      if ((a >= 0) !== (b >= 0)) { crossing[count++] = left + dx * a / (a - b); crossing[count++] = top; }
+      if ((b >= 0) !== (c >= 0)) { crossing[count++] = left + dx; crossing[count++] = top + dy * b / (b - c); }
+      if ((c >= 0) !== (d >= 0)) { crossing[count++] = left + dx * (1 - c / (c - d)); crossing[count++] = top + dy; }
+      if ((d >= 0) !== (a >= 0)) { crossing[count++] = left; crossing[count++] = top + dy * (1 - d / (d - a)); }
+      for (let index = 0; index + 3 < count; index += 4) {
+        positions[cursor++] = crossing[index]; positions[cursor++] = 0.006; positions[cursor++] = crossing[index + 1];
+        positions[cursor++] = crossing[index + 2]; positions[cursor++] = 0.006; positions[cursor++] = crossing[index + 3];
+      }
+    }
+    attribute.needsUpdate = true;
+    geometry.setDrawRange(0, cursor / 3);
+    gl.domElement.dataset.phaseFrontTime = String(visual.time);
+    gl.domElement.dataset.phaseFrontSegments = String(cursor / 6);
+  });
+  return <lineSegments geometry={geometry} name="calculated-acoustic-phase-fronts" renderOrder={20} frustumCulled={false}>
+    <lineBasicMaterial color={dark ? '#70d4ef' : '#187f9e'} depthTest={false} depthWrite={false} />
+  </lineSegments>;
 }
 
 /** Obstacles are drawn from the solver mask, including its actual grid thickness. */
@@ -314,7 +377,7 @@ function Label({ text, position, scale = 0.1, color = '#9eb3c8', outline = false
   </sprite>;
 }
 
-function ThetaOverlay({ engine, mode, observationAngle }: { engine: WaveEngine; mode: ThetaMode; observationAngle: number }) {
+function ThetaOverlay({ engine, mode, observationAngle, illustration = false }: { engine: WaveEngine; mode: ThetaMode; observationAngle: number; illustration?: boolean }) {
   const overlay = useMemo(() => angleOverlay(engine.parameters, engine.grid, mode, observationAngle), [engine.parameters, engine.grid, mode, observationAngle]);
   const geometry = useMemo(() => {
     if (!overlay.ready) return null;
@@ -358,10 +421,10 @@ function ThetaOverlay({ engine, mode, observationAngle }: { engine: WaveEngine; 
   const halfAngle = (overlay.axisAngleDegrees + overlay.angleDegrees / 2) * Math.PI / 180;
   const label = { x: overlay.origin.x + overlay.arcRadius * 1.7 * Math.cos(halfAngle), y: overlay.origin.y - overlay.arcRadius * 1.7 * Math.sin(halfAngle) };
   return <group name="theoretical-theta-overlay" renderOrder={40}>
-    <mesh geometry={geometry.axis}><meshBasicMaterial color="#ffffff" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
+    <mesh geometry={geometry.axis}><meshBasicMaterial color={illustration ? '#446b7c' : '#ffffff'} side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
     <mesh geometry={geometry.rays}><meshBasicMaterial color="#ffb331" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
     <mesh geometry={geometry.arc}><meshBasicMaterial color="#ffdc75" side={THREE.DoubleSide} depthTest={false} depthWrite={false}/></mesh>
-    <Label text={`θ = ${overlay.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}°`} position={position(label, 0.12)} scale={0.1} screenHeight={32} color="#fff3c4" outline />
+    <Label text={`θ = ${overlay.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}°`} position={position(label, 0.12)} scale={0.1} screenHeight={illustration ? 27 : 32} color="#fff3c4" outline />
     {overlay.kind === 'minimum' && overlay.rays.map(ray => <Label key={ray.angleDegrees} text={ray.angleDegrees > 0 ? '+θ₁' : '−θ₁'} position={position({ x: overlay.origin.x + (ray.end.x - overlay.origin.x) * 0.62, y: overlay.origin.y + (ray.end.y - overlay.origin.y) * 0.62 })} scale={0.09} screenHeight={26} color="#ffd47b" outline />)}
   </group>;
 }
@@ -676,12 +739,13 @@ function Scene(props: WaveSceneProps) {
     <directionalLight position={[3, 2, -3]} intensity={1.1} color="#94c9ff" />
     <CameraControls view={props.camera} zoomEnabled={props.zoomEnabled} />
     <Tank engine={props.engine} dark={props.dark} />
-    <FieldSurface engine={props.engine} display={props.display} exaggeration={props.exaggeration} onPick={props.onPick} />
+    <FieldSurface engine={props.engine} display={props.display} exaggeration={props.exaggeration} onPick={props.onPick} illustration={props.illustration} dark={props.dark} />
+    {props.illustration && props.engine.parameters.medium === 'sound' && <AcousticPhaseFronts engine={props.engine} dark={props.dark}/>}
     <Obstacles engine={props.engine} />
     <SourceIndicators engine={props.engine} />
     <ProbeMarkers probes={props.probes} engine={props.engine} />
     <FieldFeatures engine={props.engine} showNodes={props.showNodes} nodeThreshold={props.nodeThreshold} showMaxima={props.showMaxima} />
-    {props.showTheta && <ThetaOverlay engine={props.engine} mode={props.thetaMode} observationAngle={props.thetaObservationAngle} />}
+    {props.showTheta && <ThetaOverlay engine={props.engine} mode={props.thetaMode} observationAngle={props.thetaObservationAngle} illustration={props.illustration} />}
     {props.huygens && props.huygensStep > 1 && props.huygensStep < 7 && (props.engine.parameters.medium !== 'sound' || props.engine.parameters.obstacle === 'slit' || props.engine.parameters.obstacle === 'double') && <HuygensOverlay engine={props.engine} step={props.huygensStep} count={props.secondaryCount} exaggeration={props.exaggeration} />}
   </>;
 }
@@ -698,7 +762,7 @@ export function WaveScene(props: WaveSceneProps) {
         /* Canvas fallback is an HTML child, mounted even while WebGL works.
            Keep it static: the outer error boundary mounts the live 2D fallback. */
         fallback={<CanvasFallback />}
-        onCreated={({ gl }) => { gl.setClearColor(props.dark ? '#09121f' : '#e1e9ed'); props.onCanvasReady?.(gl.domElement); }}
+        onCreated={({ gl }) => { gl.setClearColor(props.dark ? '#09121f' : '#e1e9ed'); gl.domElement.dataset.illustration = String(Boolean(props.illustration)); props.onCanvasReady?.(gl.domElement); }}
         style={{ touchAction: props.zoomEnabled ? 'none' : 'pan-y' }}
       >
         <Scene {...props} />

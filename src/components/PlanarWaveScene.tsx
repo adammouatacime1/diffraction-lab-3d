@@ -165,7 +165,17 @@ export function PlanarWaveScene(props: PlanarWaveSceneProps) {
       line(p.ruler, '#f7bc64'); line(p.section, '#fff');
       if (p.showTheta) {
         const angle = angleOverlay(engine.parameters, g, p.thetaMode, p.thetaObservationAngle);
-        if (angle.ready) { line([angle.origin, angle.axisEnd], '#ffffff'); angle.rays.forEach(ray => line([angle.origin, ray.end], '#ffb331')); const point = xy(angle.origin); context.fillStyle = '#fff3c4'; context.font = 'bold 12px system-ui, sans-serif'; context.fillText(`θ = ${angle.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}°`, point.x + 13, point.y - 12); }
+        if (angle.ready) {
+          const point = xy(angle.origin), gold = p.illustration ? p.dark ? '#ffd279' : '#a3660a' : '#ffb331';
+          line([angle.origin, angle.axisEnd], p.illustration ? p.dark ? '#c5dae5' : '#49677a' : '#ffffff');
+          angle.rays.forEach(ray => line([angle.origin, ray.end], gold));
+          if (p.illustration) {
+            context.strokeStyle = gold; context.lineWidth = 2; context.beginPath();
+            context.arc(point.x, point.y, angle.arcRadius / g.width * box.width, -angle.axisAngleDegrees * Math.PI / 180, -(angle.axisAngleDegrees + angle.angleDegrees) * Math.PI / 180, angle.angleDegrees >= 0);
+            context.stroke();
+          }
+          context.fillStyle = p.illustration ? gold : '#fff3c4'; context.font = 'bold 12px system-ui, sans-serif'; context.fillText(`θ = ${angle.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}°`, point.x + 13, point.y - 12);
+        }
       }
       context.restore();
       // Apparatus drawings are visual markers of the solver's actual sources.

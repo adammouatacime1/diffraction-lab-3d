@@ -1,5 +1,7 @@
 # Vérification du montage sonore GBF et fente
 
+Le [guide 3D et θ](GBF-3D.md) décrit la révision qui ouvre le montage directement en 3D, avec ses contrôles et ses vérifications. Les rapports ci-dessous conservent la référence du montage initial, commit `c8cfa6d`.
+
 Cette révision ouvre directement le mode sonore sur un montage animé **GBF → câble → haut-parleur → fente → ondes diffractées**. Les traits sont tirés du champ de pression calculé. La vue d'observation masque les cartes de mesures et les panneaux avancés, accessibles avec **Outils et autres expériences**.
 
 ## Contrôles réalisés le 22 octobre 2026
