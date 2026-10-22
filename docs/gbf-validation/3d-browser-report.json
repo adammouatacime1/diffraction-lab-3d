@@ -1,0 +1,30 @@
+{
+  "testedAt": "2026-10-22T17:35:24.247Z",
+  "baseURL": "http://127.0.0.1:4180",
+  "build": "index-DPhhDoAP.js",
+  "browser": "154.0.8037.57",
+  "checks": [
+    {
+      "name": "3D rendu WebGL, relief et montage au temps physique calculé",
+      "passed": true,
+      "physicalTime": 0.0068333646344938895,
+      "pixels": {
+        "width": 1078,
+        "height": 468,
+        "low": 0,
+        "high": 225
+      }
+    },
+    {
+      "name": "Caméra Dessus : même temps physique en pause",
+      "passed": true,
+      "filename": "gbf-3d-top.png"
+    },
+    {
+      "name": "Caméra Isométrique : même temps physique en pause",
+      "passed": true,
+      "filename": "gbf-3d-iso.png"
+    }
+  ],
+  "errors": []
+}

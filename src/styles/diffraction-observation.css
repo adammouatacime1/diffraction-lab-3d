@@ -1,0 +1,18 @@
+/* This strip only appears in the focused sound experiment. */
+.diffraction-observation{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:15px 19px;color:var(--text)}
+.diffraction-observation-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.diffraction-observation-path{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.diffraction-observation-path svg{color:var(--accent);flex-shrink:0}
+.diffraction-observation-path strong{color:var(--text);font-weight:600}
+.diffraction-gbf-toggle{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:7px;padding:7px 10px;background:var(--panel-soft);color:var(--muted);font-size:10px;white-space:nowrap}
+.diffraction-gbf-toggle.is-on{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.diffraction-observation-explanation{font-size:10px;color:var(--muted);margin-top:8px}
+.diffraction-observation-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(105px,.55fr);align-items:center;gap:22px;margin-top:15px}
+.diffraction-observation-controls .parameter-control{margin:0}
+.diffraction-observation-values{display:flex;flex-direction:column;gap:8px;font-size:10px;color:var(--muted);border-left:1px solid var(--line);padding-left:18px}
+.diffraction-observation-values span{display:flex;justify-content:space-between;gap:12px}
+.diffraction-observation-values strong{color:var(--text);font-weight:550;font-variant-numeric:tabular-nums}
+.diffraction-observation-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;flex-wrap:wrap}
+.diffraction-observation-footer p{font-size:9px;color:var(--muted);flex:1;min-width:200px}
+.diffraction-observation-footer .text-button{font-size:9px;white-space:normal;text-align:left}
+@media(max-width:600px){.diffraction-observation{padding:14px 15px}.diffraction-observation-heading{gap:10px}.diffraction-observation-path{font-size:10px;gap:7px}.diffraction-observation-controls{grid-template-columns:1fr;gap:14px;margin-top:15px}.diffraction-observation-values{flex-direction:row;border-left:0;border-top:1px solid var(--line);padding:11px 0 0;justify-content:space-between;gap:18px}.diffraction-observation-values span{gap:12px}.diffraction-observation-footer{gap:8px;margin-top:10px}.diffraction-observation-footer p{min-width:0;flex-basis:100%}.diffraction-observation-explanation{font-size:10px}}

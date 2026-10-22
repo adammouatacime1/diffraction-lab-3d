@@ -46,6 +46,10 @@ async function pause(page) {
   if (await button.count()) await button.click();
   await page.waitForTimeout(150);
 }
+async function fullLab(page) {
+  const tools = page.getByRole('button', { name: 'Outils et autres expériences', exact: true });
+  if (await tools.isVisible()) await tools.click();
+}
 async function play(page) {
   const button = page.getByRole('button', { name: 'Démarrer', exact: true });
   if (await button.count()) await button.click();
@@ -104,7 +108,7 @@ try {
     assert.equal(await medium(page).inputValue(), 'water');
     assert.equal(await page.getByRole('tablist', { name: 'Mode du laboratoire' }).getByRole('tab').count(), 5);
     await edit(page, 'Fréquence', 12.5);
-    await medium(page).selectOption('sound'); await pause(page);
+    await medium(page).selectOption('sound'); await pause(page); await fullLab(page);
     assert.equal(await page.getByRole('spinbutton', { name: 'Fréquence', exact: true }).inputValue(), '1000');
     assert.equal(await page.getByRole('spinbutton', { name: 'Célérité', exact: true }).inputValue(), '340');
     assert.match(await page.locator('.metrics-row').innerText(), /0,340/);
@@ -134,10 +138,10 @@ try {
     assert.equal(await page.getByRole('spinbutton', { name: 'Fréquence', exact: true }).inputValue(), '12.5');
     assert.equal(await page.getByRole('spinbutton', { name: 'Amplitude source', exact: true }).inputValue(), '4');
     assert.equal(number(await clock(page).innerText()), 0);
-    await medium(page).selectOption('sound'); await pause(page);
+    await medium(page).selectOption('sound'); await pause(page); await fullLab(page);
     assert.equal(await page.getByRole('spinbutton', { name: 'Fréquence', exact: true }).inputValue(), '800');
     assert.equal(await page.getByRole('spinbutton', { name: 'Pression source', exact: true }).inputValue(), '0.75');
-    assert.equal(number(await clock(page).innerText()), 0);
+    assert.ok(number(await clock(page).innerText()) < 2, 'Le champ sonore vient de recommencer ; le montage peut démarrer automatiquement');
     return 'f eau=12,5 Hz ; f son=800 Hz et pression source=0,75 Pa sans mélange des unités';
   });
 
@@ -422,7 +426,7 @@ try {
   await check('Affichage ordinateur/mobile clair/sombre et comparaison partagée sans débordement', async () => {
     for (const viewport of [{ width: 1440, height: 1050 }, { width: 390, height: 844 }]) {
       const visual = await context.newPage(); monitor(visual, `${viewport.width}`);
-      await visual.setViewportSize(viewport); await visual.goto(`${baseURL}/?medium=sound`, { waitUntil: 'networkidle' });
+      await visual.setViewportSize(viewport); await visual.goto(`${baseURL}/?medium=sound`, { waitUntil: 'networkidle' }); await fullLab(visual);
       await play(visual); await until(async () => number(await clock(visual).innerText()) >= 9); await pause(visual);
       for (const theme of ['light', 'dark']) {
         if (theme === 'dark') await visual.getByRole('button', { name: 'Activer le mode sombre', exact: true }).click();
@@ -484,6 +488,7 @@ try {
     await pause(fallback); const firstHash = await canvasHash(acousticCanvas(fallback)); const initialTime = number(await clock(fallback).innerText());
     await play(fallback); await until(async () => number(await clock(fallback).innerText()) > initialTime + 2); await pause(fallback);
     const hash = await canvasHash(acousticCanvas(fallback)); assert.notEqual(hash, firstHash, 'Le champ Canvas doit évoluer avec le calcul, sans WebGL');
+    await fullLab(fallback);
     await fallback.getByRole('button', { name: 'Vue 3D', exact: true }).click();
     await acousticCanvas(fallback).waitFor({ state: 'visible' });
     assert.match(await fallback.locator('.simulation-panel').innerText(), /WebGL|indisponible|2D/);

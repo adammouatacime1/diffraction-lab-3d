@@ -1,0 +1,438 @@
+{
+  "baseURL": "http://127.0.0.1:4180",
+  "testedAt": "2026-10-22T17:31:11.509Z",
+  "browser": "154.0.8037.57",
+  "checks": [
+    {
+      "name": "Sélecteur de milieu distinct des cinq modes existants",
+      "passed": true,
+      "detail": "Eau conservée, son initial : 1 000 Hz, 340 m/s, λ = 0,340 m"
+    },
+    {
+      "name": "Paramètres indépendants et champ réinitialisé au changement de milieu",
+      "passed": true,
+      "detail": "f eau=12,5 Hz ; f son=800 Hz et pression source=0,75 Pa sans mélange des unités"
+    },
+    {
+      "name": "Six géométries accessibles et rendues dans le canvas de pression",
+      "passed": true,
+      "detail": "{\"none\":1469631905,\"slit\":2092036849,\"double\":279902109,\"circle\":3551902037,\"rectangle\":1456781157,\"edge\":315031013}"
+    },
+    {
+      "name": "Microphones virtuels, coordonnées libres et refus des obstacles",
+      "passed": true,
+      "detail": "M1/M2 présents ; coordonnées et glisser-déposer validés, position dans le cylindre refusée"
+    },
+    {
+      "name": "Un microphone sélectionné seul est déplacé sans créer un deuxième microphone",
+      "passed": true
+    },
+    {
+      "name": "Un microphone est relocalisé si la comparaison crée une paroi à sa position",
+      "passed": true
+    },
+    {
+      "name": "Pressions des deux microphones, unités communes et pression efficace acquise",
+      "passed": true,
+      "detail": "t=16,232 ms, deux séries Pa sur le même axe en ms"
+    },
+    {
+      "name": "Remise à zéro des mesures sans modifier le champ ni le temps physique",
+      "passed": true
+    },
+    {
+      "name": "Synchronisation réelle de 20 images 2D/3D, caméras et relief indépendant",
+      "passed": true,
+      "detail": "20 images dessinées synchrones, moteur pressure-2 partagé ; t₂D=t₃D=0.027963154255147296 s"
+    },
+    {
+      "name": "Sources, fronts et Huygens illustratifs sans modification des paramètres physiques",
+      "passed": true
+    },
+    {
+      "name": "Export sonore versionné, PNG Canvas 2D et migration des exports eau v1",
+      "passed": true,
+      "detail": "format v2, milieu/unité Pa identifiés ; export eau v1 importé"
+    },
+    {
+      "name": "Import sonore sous-résolu refusé sans modifier le milieu, les paramètres ni le temps",
+      "passed": true,
+      "detail": "4 000 Hz sous-résolu et sources cohérentes hors domaine refusés sans mutation"
+    },
+    {
+      "name": "Validations acoustiques exécutées dans l’interface sans faire avancer le laboratoire",
+      "passed": true,
+      "detail": "4 / 4 vérifications satisfaites · résultats calculés à l’instant"
+    },
+    {
+      "name": "Une validation différée est annulée lors du changement de milieu",
+      "passed": true
+    },
+    {
+      "name": "Affichage ordinateur/mobile clair/sombre et comparaison partagée sans débordement",
+      "passed": true
+    },
+    {
+      "name": "Vue 2D sans WebGL et repli lisible lorsque la 3D est indisponible",
+      "passed": true,
+      "detail": "Canvas 2D actif, temps physique avancé, repli après demande 3D"
+    },
+    {
+      "name": "Aucune erreur JavaScript, console ou ressource manquante",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "captures": [
+    {
+      "filename": "sound-desktop-analysis-light.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "theme": "light",
+      "medium": "sound",
+      "physicalTime": "16,232 ms",
+      "view": "Vue 2D",
+      "documentSize": {
+        "width": 1440,
+        "height": 3138
+      },
+      "deviceScaleFactor": 1
+    },
+    {
+      "filename": "sound-desktop-split-light.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "theme": "light",
+      "medium": "sound",
+      "physicalTime": "27,963 ms",
+      "view": "Vue partagée 2D + 3D",
+      "documentSize": {
+        "width": 1440,
+        "height": 3142
+      },
+      "deviceScaleFactor": 1
+    },
+    {
+      "filename": "sound-1440-light.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "theme": "light",
+      "medium": "sound",
+      "physicalTime": "10,402 ms",
+      "view": "Vue 2D",
+      "documentSize": {
+        "width": 1440,
+        "height": 1848
+      },
+      "deviceScaleFactor": 1
+    },
+    {
+      "filename": "sound-1440-dark.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1050
+      },
+      "theme": "dark",
+      "medium": "sound",
+      "physicalTime": "10,402 ms",
+      "view": "Vue 2D",
+      "documentSize": {
+        "width": 1440,
+        "height": 1848
+      },
+      "deviceScaleFactor": 1
+    },
+    {
+      "filename": "sound-390-light.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "medium": "sound",
+      "physicalTime": "9,819 ms",
+      "view": "Vue 2D",
+      "documentSize": {
+        "width": 390,
+        "height": 3251
+      },
+      "deviceScaleFactor": 1
+    },
+    {
+      "filename": "sound-390-dark.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "medium": "sound",
+      "physicalTime": "9,819 ms",
+      "view": "Vue 2D",
+      "documentSize": {
+        "width": 390,
+        "height": 3251
+      },
+      "deviceScaleFactor": 1
+    },
+    {
+      "filename": "sound-mobile-split-dark.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "medium": "sound",
+      "physicalTime": "9,819 ms",
+      "view": "Vue partagée 2D + 3D",
+      "documentSize": {
+        "width": 390,
+        "height": 3645
+      },
+      "deviceScaleFactor": 1
+    },
+    {
+      "filename": "sound-mobile-comparison-split-dark.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "medium": "sound",
+      "physicalTime": "11,731 ms",
+      "view": "Vue partagée 2D + 3D",
+      "documentSize": {
+        "width": 390,
+        "height": 4680
+      },
+      "deviceScaleFactor": 1
+    },
+    {
+      "filename": "sound-no-webgl.png",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "theme": "light",
+      "medium": "sound",
+      "physicalTime": "3,405 ms",
+      "view": "Vue 3D",
+      "documentSize": {
+        "width": 1280,
+        "height": 1852
+      },
+      "deviceScaleFactor": 1
+    }
+  ],
+  "liveSynchronization": [
+    [
+      0.022715689945382377,
+      0.022715689945382377
+    ],
+    [
+      0.022715689945382377,
+      0.022715689945382377
+    ],
+    [
+      0.022972232644970884,
+      0.022972232644970884
+    ],
+    [
+      0.02322877534455939,
+      0.02322877534455939
+    ],
+    [
+      0.023461995980548944,
+      0.023461995980548944
+    ],
+    [
+      0.02371853868013745,
+      0.02371853868013745
+    ],
+    [
+      0.023975081379725958,
+      0.023975081379725958
+    ],
+    [
+      0.02420830201571551,
+      0.02420830201571551
+    ],
+    [
+      0.024464844715304017,
+      0.024464844715304017
+    ],
+    [
+      0.024721387414892524,
+      0.024721387414892524
+    ],
+    [
+      0.02497793011448103,
+      0.02497793011448103
+    ],
+    [
+      0.025211150750470583,
+      0.025211150750470583
+    ],
+    [
+      0.02546769345005909,
+      0.02546769345005909
+    ],
+    [
+      0.025724236149647597,
+      0.025724236149647597
+    ],
+    [
+      0.02595745678563715,
+      0.02595745678563715
+    ],
+    [
+      0.026213999485225657,
+      0.026213999485225657
+    ],
+    [
+      0.026470542184814164,
+      0.026470542184814164
+    ],
+    [
+      0.02672708488440267,
+      0.02672708488440267
+    ],
+    [
+      0.026960305520392223,
+      0.026960305520392223
+    ],
+    [
+      0.02721684821998073,
+      0.02721684821998073
+    ]
+  ],
+  "comparisonSynchronization": [
+    [
+      0.006226990980921054,
+      0.006226990980921054,
+      0.006226990980921054,
+      0.006226990980921054
+    ],
+    [
+      0.0064835336805095616,
+      0.0064835336805095616,
+      0.0064835336805095616,
+      0.0064835336805095616
+    ],
+    [
+      0.006740076380098069,
+      0.006740076380098069,
+      0.006740076380098069,
+      0.006740076380098069
+    ],
+    [
+      0.006996619079686576,
+      0.006996619079686576,
+      0.006996619079686576,
+      0.006996619079686576
+    ],
+    [
+      0.007229839715676128,
+      0.007229839715676128,
+      0.007229839715676128,
+      0.007229839715676128
+    ],
+    [
+      0.007486382415264635,
+      0.007486382415264635,
+      0.007486382415264635,
+      0.007486382415264635
+    ],
+    [
+      0.007742925114853142,
+      0.007742925114853142,
+      0.007742925114853142,
+      0.007742925114853142
+    ],
+    [
+      0.00799946781444165,
+      0.00799946781444165,
+      0.00799946781444165,
+      0.00799946781444165
+    ],
+    [
+      0.008232688450431201,
+      0.008232688450431201,
+      0.008232688450431201,
+      0.008232688450431201
+    ],
+    [
+      0.008489231150019708,
+      0.008489231150019708,
+      0.008489231150019708,
+      0.008489231150019708
+    ],
+    [
+      0.008745773849608215,
+      0.008745773849608215,
+      0.008745773849608215,
+      0.008745773849608215
+    ],
+    [
+      0.008978994485597767,
+      0.008978994485597767,
+      0.008978994485597767,
+      0.008978994485597767
+    ],
+    [
+      0.009235537185186275,
+      0.009235537185186275,
+      0.009235537185186275,
+      0.009235537185186275
+    ],
+    [
+      0.009492079884774782,
+      0.009492079884774782,
+      0.009492079884774782,
+      0.009492079884774782
+    ],
+    [
+      0.009748622584363289,
+      0.009748622584363289,
+      0.009748622584363289,
+      0.009748622584363289
+    ],
+    [
+      0.00998184322035284,
+      0.00998184322035284,
+      0.00998184322035284,
+      0.00998184322035284
+    ],
+    [
+      0.010238385919941348,
+      0.010238385919941348,
+      0.010238385919941348,
+      0.010238385919941348
+    ],
+    [
+      0.010494928619529855,
+      0.010494928619529855,
+      0.010494928619529855,
+      0.010494928619529855
+    ],
+    [
+      0.010728149255519407,
+      0.010728149255519407,
+      0.010728149255519407,
+      0.010728149255519407
+    ],
+    [
+      0.010984691955107914,
+      0.010984691955107914,
+      0.010984691955107914,
+      0.010984691955107914
+    ]
+  ],
+  "errors": [],
+  "passed": true
+}

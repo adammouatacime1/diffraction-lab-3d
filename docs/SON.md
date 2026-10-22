@@ -1,11 +1,13 @@
 # Diffraction des ondes sonores
 
-Le laboratoire propose deux milieux dans la même application : **Surface de l’eau** et **Ondes sonores**. Le sélecteur de milieu est distinct des onglets Découverte, Huygens, Analyse, Comparaison et Présentation. Les paramètres des deux milieux sont conservés séparément ; chaque changement de milieu recommence le champ et les mesures afin de ne pas mélanger élongations et pressions. Après ce changement, la lecture est **en pause** : cliquer sur **Démarrer** pour commencer la nouvelle acquisition.
+Le laboratoire propose deux milieux dans la même application : **Surface de l’eau** et **Ondes sonores**. Le mode sonore s’ouvre sur le [montage GBF → haut-parleur → fente](GBF.md), animé et centré sur l’observation des ondes incidentes et diffractées. La fréquence et la largeur de fente se règlent directement sous la vue. **Outils et autres expériences** retrouve le laboratoire complet décrit ci-dessous.
+
+Le sélecteur de milieu est distinct des onglets Découverte, Huygens, Analyse, Comparaison et Présentation. Les paramètres des deux milieux sont conservés séparément ; chaque changement de milieu recommence le champ et les mesures afin de ne pas mélanger élongations et pressions. Le montage sonore démarre automatiquement. Les autres configurations restent **en pause** après le changement de milieu : cliquer sur **Démarrer** pour commencer la nouvelle acquisition.
 
 ## Commencer une expérience sonore
 
 1. Sélectionner **Ondes sonores**.
-2. Choisir une expérience de la bibliothèque ou régler librement la source et l’obstacle.
+2. Observer directement le montage GBF et fente ; ou ouvrir **Outils et autres expériences** pour choisir une autre expérience de la bibliothèque et régler librement la source et l’obstacle.
 3. Choisir **Vue 2D**, **Vue 3D** ou **Vue partagée 2D + 3D**.
 4. Cliquer sur **Démarrer** si la lecture est en pause, puis observer le temps physique, exprimé en millisecondes, et le facteur de ralentissement pédagogique affiché.
 5. Pour comparer des états reproductibles, recommencer après un changement de configuration et attendre l’arrivée de l’onde puis plusieurs périodes.
@@ -19,7 +21,7 @@ T = 1/f = 0,001 s = 1 ms
 
 L’amplitude est une amplitude **de pression**, pas une élongation de l’air en millimètres. La vitesse de lecture et l’amplification du relief sont des réglages de visualisation : ils ne modifient ni `f`, ni `c`, ni l’amplitude physique. Les contrôles **Vitesse de lecture pédagogique** et **Amplification du relief** proposent chacun un curseur et une saisie numérique. À 1×, une seconde réelle correspond nominalement à 0,005 s physiques : le phénomène est ralenti **200 fois**. À 0,25×, il est ralenti **800 fois**. Le facteur affiché suit ce réglage ; le coût du calcul peut ralentir encore la progression sur une machine chargée.
 
-Pour ouvrir directement le milieu sonore, ajouter `?medium=sound` à l’adresse de l’application. Lors d’un chargement initial direct, le calcul démarre comme dans le mode eau ; la mise en pause décrite ci-dessus concerne le changement de milieu pendant une session.
+Pour ouvrir directement le milieu sonore et son montage GBF, ajouter `?medium=sound` à l’adresse de l’application. Lors d’un chargement initial direct, le calcul démarre comme dans le mode eau.
 
 ## Ce qui est calculé
 
@@ -88,6 +90,7 @@ La décroissance géométrique provient du solveur 2D. Aucune loi arbitraire d�
 
 | Expérience | Manipulation et comparaison |
 | --- | --- |
+| Montage GBF et fente | Observer le haut-parleur localisé, la propagation vers la fente puis l’étalement derrière la paroi |
 | Onde plane | Lire `λ = 34 cm` et `T = 1 ms`, puis mesurer l’espacement des fronts |
 | Onde circulaire 2D | Observer des fronts circulaires autour de la source linéique idéalisée |
 | Fente étroite | `a = 17 cm`, donc `a/λ = 0,5` |

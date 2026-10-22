@@ -1,10 +1,18 @@
 import { DEFAULT_PARAMETERS, SOUND_PARAMETERS } from '../types';
 import type { Grid, MediumKind, Parameters } from '../types';
 
+/** Visible GBF + loudspeaker experiment; the generator controls an existing source. */
+export const SOUND_MONTAGE: Parameters = {
+  ...SOUND_PARAMETERS,
+  source: 'point', sourceX: 0.38, sourceY: 0.8,
+  obstacle: 'slit', obstacleX: 1.35, obstacleY: 0.8,
+  aperture: 0.17, sourceEnabled: true,
+};
+
 /** Physical configurations are separate; the renderer never converts physics parameters. */
 export const MEDIA = {
   water: { label: 'Surface de l’eau', defaults: DEFAULT_PARAMETERS, fieldUnit: 'mm', fieldScale: 1000, timeUnit: 's', timeScale: 1, physicalRate: 1, defaultPlayback: 0.25 },
-  sound: { label: 'Ondes sonores', defaults: SOUND_PARAMETERS, fieldUnit: 'Pa', fieldScale: 1, timeUnit: 'ms', timeScale: 1000, physicalRate: 0.005, defaultPlayback: 1 },
+  sound: { label: 'Ondes sonores', defaults: SOUND_MONTAGE, fieldUnit: 'Pa', fieldScale: 1, timeUnit: 'ms', timeScale: 1000, physicalRate: 0.005, defaultPlayback: 1 },
 } as const;
 
 /** Twelve cells per shortest wavelength on the selected grid. CFL alone is not accuracy. */

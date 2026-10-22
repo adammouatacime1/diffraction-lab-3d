@@ -52,7 +52,7 @@ export function AcousticViews({ view, ...props }: AcousticViewsProps) {
   const fallback = <div className="acoustic-webgl-fallback"><p role="status">WebGL indisponible : la carte de pression 2D reste utilisable.</p><PlanarWaveScene {...props} onCanvasReady={spatialReady}/></div>;
   return <div className={`acoustic-views acoustic-views-${view}`} data-shared-engine={engineId}>
     {(view === '2d' || view === 'split') && <section className="acoustic-view acoustic-view-2d" data-view="2d" data-engine-id={engineId} data-physical-time={props.engine.time} aria-labelledby={`${id}-2d`}>
-      <h3 className="acoustic-view-title" id={`${id}-2d`}>Vue 2D · carte de pression</h3>
+      <h3 className="acoustic-view-title" id={`${id}-2d`}>{props.illustration?'Montage GBF · haut-parleur · fente':'Vue 2D · carte de pression'}</h3>
       <PlanarWaveScene {...props} onCanvasReady={planarReady}/>
     </section>}
     {(view === '3d' || view === 'split') && <section className="acoustic-view acoustic-view-3d" data-view="3d" data-engine-id={engineId} data-physical-time={props.engine.time} aria-labelledby={`${id}-3d`}>

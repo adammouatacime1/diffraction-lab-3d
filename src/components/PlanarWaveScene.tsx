@@ -8,6 +8,8 @@ import { getVisualSnapshot } from '../physics/visualSnapshot';
 import type { VisualSnapshot } from '../physics/visualSnapshot';
 
 export interface PlanarWaveSceneProps extends WaveSceneProps {
+  /** A quiet apparatus view of the same calculated field, with phase fronts. */
+  illustration?: boolean;
   showWavefronts?: boolean;
   onMoveProbe?: (index: number, point: ProbePosition) => void;
   ruler?: ProbePosition[];
@@ -61,9 +63,11 @@ export function PlanarWaveScene(props: PlanarWaveSceneProps) {
         raster.width = g.nx; raster.height = g.ny; pixels = rasterContext.createImageData(g.nx, g.ny);
       }
       const bytes = pixels.data, source = Math.max(engine.parameters.amplitude, 1e-10);
+      const quiet = p.dark ? [20, 40, 53] : [240, 247, 250];
       for (let index = 0; index < engine.field.length; index++) {
         const offset = index * 4;
         if (engine.mask[index]) { bytes[offset] = 17; bytes[offset + 1] = 38; bytes[offset + 2] = 56; }
+        else if (p.illustration) { bytes[offset] = quiet[0]; bytes[offset + 1] = quiet[1]; bytes[offset + 2] = quiet[2]; }
         else {
           let low: number[], high: number[], blend: number;
           if (p.display === 'displacement') {
@@ -89,7 +93,8 @@ export function PlanarWaveScene(props: PlanarWaveSceneProps) {
       context.restore();
       context.strokeStyle = p.dark ? '#839cab' : '#688595'; context.lineWidth = 1;
       context.strokeRect(box.left, box.top, box.width, box.height);
-      // Fixed physical rules and coordinates stay outside the field rectangle.
+      // Advanced pressure maps retain the original physical ruler and coordinates.
+      if (!p.illustration) {
       context.fillStyle = p.dark ? '#a8bfcc' : '#5b7787'; context.font = '9px system-ui, sans-serif';
       context.textAlign = 'center';
       for (let x = 0; x <= g.width + 0.001; x += 0.1) {
@@ -104,17 +109,20 @@ export function PlanarWaveScene(props: PlanarWaveSceneProps) {
         if (Math.round(y * 10) % 4 === 0) context.fillText(y.toFixed(1).replace('.', ','), box.left - 9, py + 3);
       }
       context.textAlign = 'left'; context.fillText('y (m)', Math.max(3, box.left - 33), box.top - 10);
+      }
 
       context.save(); context.beginPath(); context.rect(box.left, box.top, box.width, box.height); context.clip();
-      if (p.showWavefronts) {
+      if (p.showWavefronts || p.illustration) {
         // Instantaneous zero-pressure contours trace phase fronts. They are not
         // zero-amplitude zones; unreached/very weak cells are omitted explicitly.
-        context.strokeStyle = p.dark ? '#ffffffa0' : '#ffffffc5'; context.lineWidth = 1; context.beginPath();
+        context.strokeStyle = p.illustration ? p.dark ? '#65cce8' : '#2b8eb5' : p.dark ? '#ffffffa0' : '#ffffffc5'; context.lineWidth = p.illustration ? 1.6 : 1; context.beginPath();
         for (let y = 0; y < g.ny - 1; y++) for (let x = 0; x < g.nx - 1; x++) {
           const k = y * g.nx + x;
           if (engine.mask[k] || engine.mask[k + 1] || engine.mask[k + g.nx] || engine.mask[k + g.nx + 1]) continue;
           const a = engine.field[k], b = engine.field[k + 1], c = engine.field[k + g.nx + 1], d = engine.field[k + g.nx];
-          if (Math.max(Math.abs(a), Math.abs(b), Math.abs(c), Math.abs(d)) < source * 0.025) continue;
+          // Visibility depends on actual instantaneous samples, including after
+          // the GBF is stopped and measurement accumulators have been cleared.
+          if (Math.max(Math.abs(a), Math.abs(b), Math.abs(c), Math.abs(d)) < source * (p.illustration ? 0.001 : 0.025)) continue;
           const left = box.left + x * cellWidth, top = box.top + y * cellHeight;
           let count = 0;
           if ((a >= 0) !== (b >= 0)) { crossings[count++] = left + cellWidth * a / (a - b); crossings[count++] = top; }
@@ -125,11 +133,6 @@ export function PlanarWaveScene(props: PlanarWaveSceneProps) {
         }
         context.stroke();
       }
-      const sourcePositions = engine.parameters.source === 'pair' ? [engine.parameters.sourceY - engine.parameters.sourceSeparation / 2, engine.parameters.sourceY + engine.parameters.sourceSeparation / 2] : [engine.parameters.sourceY];
-      context.strokeStyle = engine.parameters.sourceEnabled ? '#f7be66' : '#7c8e99'; context.lineWidth = 2.5;
-      if (engine.parameters.source === 'plane') { const a = xy({ x: engine.parameters.sourceX, y: 0 }), b = xy({ x: engine.parameters.sourceX, y: g.height }); context.beginPath(); context.moveTo(a.x, a.y); context.lineTo(b.x, b.y); context.stroke(); }
-      else sourcePositions.forEach(y => { const point = xy({ x: engine.parameters.sourceX, y }); context.beginPath(); context.arc(point.x, point.y, 5, 0, TAU); context.stroke(); });
-
       if (p.huygens && p.huygensStep > 1 && p.huygensStep < 7 && (engine.parameters.obstacle === 'slit' || engine.parameters.obstacle === 'double')) {
         const centers = engine.parameters.obstacle === 'double' ? [engine.parameters.obstacleY - engine.parameters.separation / 2, engine.parameters.obstacleY + engine.parameters.separation / 2] : [engine.parameters.obstacleY];
         context.strokeStyle = '#ffb33199'; context.fillStyle = '#ffb331'; context.lineWidth = 1;
@@ -165,22 +168,91 @@ export function PlanarWaveScene(props: PlanarWaveSceneProps) {
         if (angle.ready) { line([angle.origin, angle.axisEnd], '#ffffff'); angle.rays.forEach(ray => line([angle.origin, ray.end], '#ffb331')); const point = xy(angle.origin); context.fillStyle = '#fff3c4'; context.font = 'bold 12px system-ui, sans-serif'; context.fillText(`θ = ${angle.angleDegrees.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}°`, point.x + 13, point.y - 12); }
       }
       context.restore();
+      // Apparatus drawings are visual markers of the solver's actual sources.
+      // The electrical cable and GBF never inject a second acoustic wave.
+      const parameters = engine.parameters;
+      const sourcePositions = parameters.source === 'pair' ? [parameters.sourceY - parameters.sourceSeparation / 2, parameters.sourceY + parameters.sourceSeparation / 2] : [parameters.sourceY];
+      const activeColor = parameters.sourceEnabled ? '#ecad52' : '#8496a2';
+      const generator = p.illustration
+        ? { x: box.left + 7, y: box.top + box.height - 47, width: 103, height: 39 }
+        : { x: rect.width - 111, y: 5, width: 101, height: 29 };
+      context.save();
+      context.strokeStyle = p.dark ? '#d3a958' : '#b57c27'; context.lineWidth = 1.7;
+      sourcePositions.forEach(y => {
+        const point = xy({ x: parameters.sourceX, y });
+        const back = point.x - 22;
+        context.beginPath();
+        if (p.illustration) {
+          context.moveTo(generator.x + 13, generator.y);
+          context.lineTo(generator.x + 13, generator.y - 9);
+          context.lineTo(back, generator.y - 9);
+          context.lineTo(back, point.y);
+        } else {
+          context.moveTo(generator.x + 12, generator.y + generator.height);
+          context.lineTo(generator.x + 12, box.top - 6);
+          context.lineTo(back, box.top - 6);
+          context.lineTo(back, point.y);
+        }
+        context.lineTo(point.x - 16, point.y); context.stroke();
+      });
+      context.fillStyle = p.dark ? '#203d4d' : '#ffffff'; context.strokeStyle = p.dark ? '#64818e' : '#8fa7b5'; context.lineWidth = 1;
+      context.beginPath(); context.roundRect(generator.x, generator.y, generator.width, generator.height, 6); context.fill(); context.stroke();
+      context.textAlign = 'left'; context.font = 'bold 9px system-ui, sans-serif'; context.fillStyle = p.dark ? '#f0f6f8' : '#244557';
+      context.fillText('GBF', generator.x + 8, generator.y + 12);
+      context.fillStyle = parameters.sourceEnabled ? '#4cb39a' : '#9aa7af'; context.beginPath(); context.arc(generator.x + generator.width - 9, generator.y + 9, 2.5, 0, TAU); context.fill();
+      context.fillStyle = p.dark ? '#b5dce4' : '#356879'; context.font = '10px system-ui, sans-serif';
+      context.fillText(`${parameters.frequency.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} Hz`, generator.x + (p.illustration ? 8 : 33), generator.y + (p.illustration ? 28 : 20));
+      if (p.illustration) {
+        context.strokeStyle = activeColor; context.lineWidth = 2; context.beginPath(); context.arc(generator.x + generator.width - 16, generator.y + 26, 6, 0, TAU); context.stroke();
+        context.beginPath(); context.moveTo(generator.x + generator.width - 16, generator.y + 26); context.lineTo(generator.x + generator.width - 13, generator.y + 22); context.stroke();
+      }
+      if (parameters.source === 'plane') {
+        const a = xy({ x: parameters.sourceX, y: 0 }), b = xy({ x: parameters.sourceX, y: g.height });
+        context.strokeStyle = activeColor; context.lineWidth = 3; context.beginPath(); context.moveTo(a.x, a.y); context.lineTo(b.x, b.y); context.stroke();
+        context.font = '9px system-ui, sans-serif'; context.fillStyle = p.dark ? '#b5dce4' : '#356879'; context.textAlign = 'left';
+        context.fillText('Émetteur plan idéalisé', Math.min(a.x + 8, rect.width - 130), Math.max(47, box.top + 15));
+      } else sourcePositions.forEach((y, index) => {
+        const point = xy({ x: parameters.sourceX, y });
+        context.fillStyle = p.dark ? '#344f5d' : '#5b7787'; context.strokeStyle = p.dark ? '#a7c0cb' : '#314c5e'; context.lineWidth = 1.3;
+        context.beginPath(); context.roundRect(point.x - 21, point.y - 8, 11, 16, 2); context.fill(); context.stroke();
+        context.fillStyle = activeColor;
+        context.beginPath(); context.moveTo(point.x - 10, point.y - 5); context.lineTo(point.x, point.y - 12); context.lineTo(point.x, point.y + 12); context.lineTo(point.x - 10, point.y + 5); context.closePath(); context.fill(); context.stroke();
+        context.strokeStyle = p.dark ? '#ffe2a5' : '#996d2d'; context.lineWidth = 2;
+        context.beginPath(); context.moveTo(point.x, point.y - 12); context.lineTo(point.x, point.y + 12); context.stroke();
+        context.fillStyle = p.dark ? '#dce7ee' : '#355668'; context.font = '9px system-ui, sans-serif'; context.textAlign = 'center';
+        if (p.illustration) context.fillText(parameters.source === 'pair' ? `HP ${index + 1}` : 'Haut-parleur', Math.max(45, point.x - 6), point.y - 21);
+      });
+      if (p.illustration && (parameters.obstacle === 'slit' || parameters.obstacle === 'double')) {
+        const obstacle = xy({ x: parameters.obstacleX, y: parameters.obstacleY });
+        const annotationY = box.top + box.height + 20;
+        context.font = `${rect.width < 450 ? 9 : 11}px system-ui, sans-serif`; context.fillStyle = p.dark ? '#a8c4d1' : '#54798d'; context.textAlign = 'center';
+        context.fillText('Ondes incidentes', box.left + (obstacle.x - box.left) * 0.5, annotationY);
+        context.fillText('Ondes diffractées', obstacle.x + (box.left + box.width - obstacle.x) * 0.5, annotationY);
+        context.fillStyle = activeColor; context.font = 'bold 10px system-ui, sans-serif';
+        context.fillText(parameters.obstacle === 'double' ? 'Double fente' : 'Fente', obstacle.x, box.top - 10);
+      }
+      context.restore();
       p.probes.forEach((probe, index) => {
         const point = xy(probe), color = index === 0 ? '#218dba' : '#c65353';
         context.fillStyle = p.dark ? '#12222f' : '#fff'; context.strokeStyle = color; context.lineWidth = 2;
         context.beginPath(); context.arc(point.x, point.y, 7, 0, TAU); context.fill(); context.stroke();
         context.fillStyle = color; context.font = 'bold 11px system-ui, sans-serif'; context.textAlign = 'left'; context.fillText(`M${index + 1}`, point.x + 10, point.y - 8);
       });
-      if (hover.current) {
+      if (hover.current && !p.illustration) {
         const reading = engine.sampleAt(hover.current.x, hover.current.y);
         context.fillStyle = p.dark ? '#dce7ee' : '#243b49'; context.font = '10px system-ui, sans-serif'; context.textAlign = 'left';
         context.fillText(`x ${hover.current.x.toFixed(2)} m · y ${hover.current.y.toFixed(2)} m · ${reading.solid ? 'obstacle' : `p′ ${reading.displacement.toFixed(3)} Pa`}`, 12, rect.height - 7);
-      } else if (p.showWavefronts) {
+      } else if (p.showWavefronts && !p.illustration) {
         context.fillStyle = p.dark ? '#a8bfcc' : '#5b7787'; context.font = '9px system-ui, sans-serif'; context.textAlign = 'left';
         context.fillText('Fronts : p′ = 0 instantané (phase), pas amplitude nulle', 12, rect.height - 7);
       }
       element.dataset.physicalTime = String(engine.time);
       element.dataset.grid = `${g.nx}x${g.ny}`;
+      element.dataset.sourceKind = parameters.source;
+      element.dataset.sourceEnabled = String(parameters.sourceEnabled);
+      element.dataset.sourceFrequency = String(parameters.frequency);
+      element.dataset.apparatus = 'GBF → haut-parleur → champ calculé';
+      element.dataset.illustration = String(Boolean(p.illustration));
       frame = requestAnimationFrame(draw);
     };
     const resize = new ResizeObserver(() => { viewRect = element.getBoundingClientRect(); }); resize.observe(element);
@@ -198,7 +270,7 @@ export function PlanarWaveScene(props: PlanarWaveSceneProps) {
     if (drag.current) { if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); drag.current = null; event.currentTarget.style.touchAction = 'pan-y'; return; }
     const point = pointFromEvent(event); if (!cancelled && point) props.onPick(point);
   };
-  return <canvas ref={canvas} className="planar-wave-canvas" role="img" aria-label="Carte plane 2D de la pression acoustique : surpression et dépression, obstacles et microphones virtuels" onPointerDown={event => {
+  return <canvas ref={canvas} className="planar-wave-canvas" role="img" aria-label={props.illustration ? 'GBF relié au haut-parleur : ondes incidentes, passage par la fente et ondes diffractées calculées' : 'Carte plane 2D de la pression acoustique : GBF, haut-parleurs, surpression et dépression, obstacles et microphones virtuels'} onPointerDown={event => {
     const point = pointFromEvent(event); if (!point || !props.onMoveProbe) return;
     const box = bounds.current;
     const index = props.probes.findIndex(probe => Math.hypot((probe.x - point.x) / props.engine.grid.width * box.width, (probe.y - point.y) / props.engine.grid.height * box.height) < 14);

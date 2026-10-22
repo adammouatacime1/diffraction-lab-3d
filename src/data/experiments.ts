@@ -1,4 +1,5 @@
 import { DEFAULT_PARAMETERS, SOUND_PARAMETERS, type Experiment } from '../types';
+import { SOUND_MONTAGE } from './media';
 
 const base = { ...DEFAULT_PARAMETERS, speed: 2, frequency: 10, boundary: 'absorbing' as const };
 
@@ -87,6 +88,13 @@ const soundBase = { ...SOUND_PARAMETERS, boundary: 'absorbing' as const };
 
 /** Pressure-wave experiments in the same 2D domain; predictions are not measured results. */
 export const SOUND_EXPERIMENTS: Experiment[] = [
+  {
+    id: 'gbf', title: 'GBF, haut-parleur et diffraction par une fente', shortTitle: 'Montage GBF et fente', category: 'Observer',
+    objective: 'Voir les ondes partir du haut-parleur, traverser la fente et s’étaler après l’ouverture.',
+    prediction: 'Avec a = 17 cm et λ = 34 cm, la fente est plus étroite que la longueur d’onde : les fronts transmis devraient s’étaler nettement.',
+    explanation: 'Le GBF fournit un signal électrique sinusoïdal au haut-parleur. Le haut-parleur représente la source acoustique du modèle 2D. Les fronts visibles proviennent de la pression calculée ; la fente transmet et diffracte cette onde, sans seconde source ajoutée après la paroi.',
+    parameters: { ...SOUND_MONTAGE }, mode: 'discovery',
+  },
   {
     id: 'plane', title: '01 · Propagation d’une onde sonore plane', shortTitle: 'Onde plane', category: 'Propagation',
     objective: 'Suivre des fronts de pression rectilignes et mesurer leur espacement.',

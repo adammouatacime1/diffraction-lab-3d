@@ -414,8 +414,56 @@ function Tank({ engine, dark }: { engine: WaveEngine; dark: boolean }) {
   </group>;
 }
 
+/** Physical apparatus symbols share the solver's source positions; they inject no field. */
+function AcousticSourceApparatus({ engine }: { engine: WaveEngine }) {
+  const { parameters: p, grid } = engine;
+  const sourceX = p.sourceX - grid.width / 2;
+  const generatorX = -grid.width / 2 + 0.2;
+  const generatorZ = -grid.height / 2 + 0.22;
+  const sourceYs = p.source === 'pair'
+    ? [p.sourceY - p.sourceSeparation / 2, p.sourceY + p.sourceSeparation / 2]
+    : [p.sourceY];
+  const color = p.sourceEnabled ? '#ffc477' : '#7c8d98';
+  const cables = useMemo(() => sourceYs.map(y => {
+    const z = clamp(y, 0, grid.height) - grid.height / 2;
+    const bendX = Math.min(sourceX - 0.19, generatorX + 0.24);
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(generatorX + 0.17, 0.1, generatorZ + 0.055),
+      new THREE.Vector3(bendX, 0.08, generatorZ + 0.15),
+      new THREE.Vector3(sourceX - 0.19, 0.09, z - 0.1),
+      new THREE.Vector3(p.source === 'plane' ? sourceX : sourceX - 0.12, p.source === 'plane' ? 0.045 : 0.13, z),
+    ]);
+    return new THREE.TubeGeometry(curve, 32, 0.007, 6, false);
+  }), [sourceX, generatorX, generatorZ, grid.height, p.source, p.sourceY, p.sourceSeparation]);
+  useEffect(() => () => cables.forEach(geometry => geometry.dispose()), [cables]);
+  return <group name="acoustic-gbf-loudspeaker-apparatus">
+    <group name="gbf-electrical-generator" position={[generatorX, 0.105, generatorZ]}>
+      <mesh><boxGeometry args={[0.34, 0.13, 0.23]}/><meshStandardMaterial color="#254b5b" metalness={0.35} roughness={0.45}/></mesh>
+      <mesh position={[-0.035, 0.067, -0.015]}><boxGeometry args={[0.205, 0.006, 0.105]}/><meshStandardMaterial color={p.sourceEnabled ? '#b8e3ce' : '#718982'} emissive={p.sourceEnabled ? '#275748' : '#000000'} emissiveIntensity={0.3}/></mesh>
+      <mesh position={[0.115, 0.078, -0.005]}><cylinderGeometry args={[0.026, 0.026, 0.02, 20]}/><meshStandardMaterial color="#dbe8e8" metalness={0.7} roughness={0.3}/></mesh>
+      <mesh position={[0.12, 0.075, 0.065]}><sphereGeometry args={[0.012, 12, 8]}/><meshBasicMaterial color={p.sourceEnabled ? '#70dec0' : '#677c80'}/></mesh>
+      <Label text={p.sourceEnabled ? 'GBF · SINUS' : 'GBF · ARRÊT'} position={[0, 0.24, -0.11]} scale={0.063} screenHeight={24} color="#e3f4f3" outline/>
+      <Label text={`${p.frequency.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} Hz`} position={[-0.025, 0.13, 0.035]} scale={0.063} screenHeight={22} color="#193e3f"/>
+    </group>
+    {cables.map((geometry, index) => <mesh key={index} geometry={geometry} name="electrical-cable"><meshStandardMaterial color="#ca754b" roughness={0.65}/></mesh>)}
+    {p.source === 'plane' ? <group position={[sourceX, 0.025, 0]} name="ideal-plane-pressure-source">
+      <mesh><boxGeometry args={[0.025, 0.04, grid.height - 0.06]}/><meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.15}/></mesh>
+      <Label text="SOURCE PLANE" position={[0, 0.23, -grid.height / 2 + 0.04]} scale={0.07} screenHeight={24} color={color} outline/>
+      <Label text="IDÉALISÉE" position={[0, 0.12, -grid.height / 2 + 0.04]} scale={0.06} screenHeight={20} color={color} outline/>
+    </group> : sourceYs.map((y, index) => <group key={index} name={`loudspeaker-${index + 1}`} position={[sourceX, 0.145, clamp(y, 0, grid.height) - grid.height / 2]}>
+      <mesh position={[-0.105, 0, 0]}><boxGeometry args={[0.09, 0.15, 0.19]}/><meshStandardMaterial color="#213b4b" metalness={0.3} roughness={0.55}/></mesh>
+      <mesh position={[-0.04, 0, 0]} rotation={[0, 0, -Math.PI / 2]}><cylinderGeometry args={[0.091, 0.035, 0.075, 32, 1, true]}/><meshStandardMaterial color="#526774" side={THREE.DoubleSide} roughness={0.8}/></mesh>
+      <mesh position={[0.002, 0, 0]} rotation={[0, Math.PI / 2, 0]}><ringGeometry args={[0.077, 0.094, 32]}/><meshStandardMaterial color={color} side={THREE.DoubleSide} metalness={0.55} roughness={0.4}/></mesh>
+      <mesh position={[-0.015, 0, 0]} rotation={[0, Math.PI / 2, 0]}><circleGeometry args={[0.028, 24]}/><meshStandardMaterial color="#122533" side={THREE.DoubleSide}/></mesh>
+      <mesh position={[-0.1, -0.113, 0]}><cylinderGeometry args={[0.011, 0.014, 0.08, 12]}/><meshStandardMaterial color="#6c8c97" metalness={0.6}/></mesh>
+      <Label text={sourceYs.length > 1 ? `HP ${index + 1}` : 'HAUT-PARLEUR'} position={[-0.02, 0.2, 0]} scale={0.065} screenHeight={24} color={color} outline/>
+    </group>)}
+  </group>;
+}
+
 function SourceIndicators({ engine }: { engine: WaveEngine }) {
   const { parameters: p, grid } = engine;
+  if (p.medium === 'sound') return <AcousticSourceApparatus engine={engine}/>;
   const positions = p.source === 'pair'
     ? [p.sourceY - p.sourceSeparation / 2, p.sourceY + p.sourceSeparation / 2]
     : [p.sourceY];

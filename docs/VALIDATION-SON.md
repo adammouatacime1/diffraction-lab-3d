@@ -1,5 +1,7 @@
 # Vérifications du laboratoire eau et son
 
+Pour la révision qui ouvre directement le montage **GBF → haut-parleur → fente**, consulter [GBF-VALIDATION.md](GBF-VALIDATION.md). Les résultats et captures ci-dessous conservent la référence de la première livraison acoustique, commit `102f00f`.
+
 Version vérifiée le **22 octobre 2026**, sur la branche **`ajout-ondes-sonores`**, issue du code complet `b11607e208d996535705630ee71d9bcd30e64857` de `livraison-diffraction-lab-3d`. Les captures et rapports correspondent à la construction de production dont les empreintes figurent dans [tested-build.json](son-validation/tested-build.json).
 
 ## Résultats réellement obtenus

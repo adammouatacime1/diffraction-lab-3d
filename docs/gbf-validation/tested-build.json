@@ -1,0 +1,17 @@
+{
+  "sourceBranch": "ajout-ondes-sonores",
+  "baseSourceCommit": "102f00fd27f48503b70447a0a1fccb36759142ee",
+  "unitTests": {
+    "passed": 74,
+    "total": 74,
+    "files": 9
+  },
+  "fullRegressionBundle": "assets/index-BeZzCQMA.js",
+  "finalBuildNotes": "The final build includes a subsequent readability adjustment to 3D GBF labels, checked by the final GBF browser run and a dedicated 3D smoke check.",
+  "files_sha256": {
+    "assets/index-DPhhDoAP.js": "6b0d0bc54813661793c9a0d1adb75bd9128888f022b5bdc62d3468e19db61a33",
+    "assets/index-mwC0ohHQ.css": "a89803dd3930e4433ca2c9a93d413ab19a5a3ae9985d9aa57478bef66850f354",
+    "favicon.svg": "6f5b59a81ed8250a44cebd974b090a937641a8de062b8ba93f831aceb2fb47a7",
+    "index.html": "43daccbb567f9c1994b9e895403ebfc0d3be3ad83cc6d94680e67e7aaffce96a"
+  }
+}

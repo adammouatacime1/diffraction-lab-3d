@@ -1,0 +1,78 @@
+{
+  "baseURL": "http://127.0.0.1:4180",
+  "soundURL": "http://127.0.0.1:4180/?medium=sound",
+  "testedAt": "2026-10-22T17:34:07.242Z",
+  "browser": "154.0.8037.57",
+  "checks": [
+    {
+      "name": "Le lien sonore ouvre directement le montage de diffraction",
+      "passed": true,
+      "detail": "GBF et émetteur sur la scène ; fréquence et largeur de fente seules au premier plan"
+    },
+    {
+      "name": "Les fronts transmis derrière la fente proviennent d’un champ évolutif",
+      "passed": true,
+      "detail": "3177 pixels modifiés en aval ; t = 14.996 ms"
+    },
+    {
+      "name": "Les réglages essentiels modifient réellement le montage et recommencent le champ",
+      "passed": true,
+      "detail": "JSON : source ponctuelle (0,38 ; 0,80) m, fente, 800 Hz et ouverture 0,34 m"
+    },
+    {
+      "name": "Le montage simple se recharge sans supprimer les outils avancés",
+      "passed": true,
+      "detail": "Retour au montage GBF et fente initial à 1 000 Hz"
+    },
+    {
+      "name": "Arrêter le GBF conserve les ondes déjà émises et le temps physique",
+      "passed": true,
+      "detail": "L’arrêt coupe la source sans effacer les fronts déjà calculés"
+    },
+    {
+      "name": "Le milieu eau reste accessible avec son interface et ses unités",
+      "passed": true
+    },
+    {
+      "name": "Montage visible sur mobile, thème clair",
+      "passed": true
+    },
+    {
+      "name": "Montage visible sur mobile, thème sombre",
+      "passed": true
+    }
+  ],
+  "captures": [
+    {
+      "filename": "gbf-desktop-light.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1080
+      },
+      "theme": "light",
+      "physicalTime": "0.014996086894128208",
+      "documentWidth": 1440
+    },
+    {
+      "filename": "gbf-mobile-light.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "light",
+      "physicalTime": "0.012990389424618061",
+      "documentWidth": 390
+    },
+    {
+      "filename": "gbf-mobile-dark.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "physicalTime": "0.012990389424618061",
+      "documentWidth": 390
+    }
+  ],
+  "errors": []
+}
